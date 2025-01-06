@@ -186,7 +186,7 @@ def partitions(n, I=1):
             yield (i,) + p
 
 
-n = 10
+n = 20
 
 # compute all partitions of n
 Pn = [list(p) for p in list(partitions(n))]
