@@ -17,9 +17,20 @@ from math import factorial
 
 # parity of a permutation that sorts an integer sequence 
 
-# NOTE: the cache decorator keeps the results of the function in memory, so that it does not need to be recomputed
-def parity(s):
-    assert(len(np.unique(s))==len(s))
+# NOTE: the cache decorator keeps the results of the function in memory, 
+#       so that it does not need to be recomputed. 
+#       This is useful for the parity function, which is called many times
+#       with the same input.
+#          
+#       Note that the input to the function must be hashable, which is why 
+#       we use a tuple instead of a list or a NumPy array. Only apply this to
+#       pure functions, i.e., functions that do not have side effects.
+#
+#       The cache decorator is available in Python 3.9 and later.
+#
+@cache
+def parity(s: tuple) -> int:
+    assert(len(set(s))==len(s)) # check if the input is a permutation
     p = True
     for a,b in itertools.combinations(range(len(s)),2):
         if s[a]>s[b]:
@@ -28,6 +39,13 @@ def parity(s):
         return 1
     else:
         return -1
+    
+# argsort function that returns the permutation that sorts a sequence
+@cache
+def argsort(seq:tuple) -> tuple:
+    return tuple(sorted(range(len(seq)), key=seq.__getitem__))
+
+
 
 # computes the characters of the symmetric group S_n using Murnaghan–Nakayama rule (Algorithm 3 from Hepler's thesis)
 #
@@ -38,38 +56,39 @@ def parity(s):
 #
 # Returns the character of S_n for an irrep Lamnda and a conjugacy class Mu
 def character(n, Lambda, Mu):
+
     # sort Lambda and Mu in the non-increasing order
-    Lambda = np.flip(np.sort(Lambda))
-    Mu = np.flip(np.sort(Mu))
+    Lambda = sorted(Lambda,reverse=True)
+    Mu = sorted(Mu,reverse=True)
+
     # sanity checks
-    assert(np.sum(Lambda)==n)
-    assert(np.sum(Mu)==n)
-    assert(np.min(Lambda)>=1)
-    assert(np.min(Mu)>=1)
+    assert(sum(Lambda)==n)
+    assert(sum(Mu)==n)
+    assert(min(Lambda)>=1)
+    assert(min(Mu)>=1)
+
     # number of parts in each partition
     k = len(Lambda)
     m = len(Mu)
-    # extended diagram of lambda
-    h_ext = [Lambda[i]+k-i-1 for i in range(k)]
-    # stores the character value
-    chi = 0
-    # z[i] is the row of h_ext to subtract cycle Mu[i]
-    z = np.zeros(m,dtype=int)
-    # variable which determines which of z variables to increment next
-    j = m-1
+   
+    h_ext = [Lambda[i]+k-i-1 for i in range(k)]  # extended diagram of lambda
+    chi = 0 # stores the character value
+    z = [0 for _ in range(m)]  # z[i] is the row of h_ext to subtract cycle Mu[i]
+
+    j = m-1  # variable which determines which of z variables to increment next
     while 1:
         continue_flag = True
-        h = h_ext.copy()
+        h = h_ext.copy() # copy of the extended diagram TODO: check if this is necessary
         for i in range(m):
             # remove mu[i] from from row z[i] of h
             h[z[i]]-= Mu[i] 
-            if h[z[i]]<0 or len(np.unique(h))<k:
+            if h[z[i]]<0 or len(set(h))<k:
                 continue_flag = False
                 j = i
                 break
 
         if continue_flag: 
-            chi+= parity(np.flip(np.argsort(h)))
+            chi+= parity(argsort(tuple(h))) # parity(np.flip(np.argsort(h)))
             j = m-1
 
         z[j]+=1
