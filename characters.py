@@ -41,6 +41,7 @@ def parity(s: tuple) -> int:
         return -1
     
 # argsort function that returns the permutation that sorts a sequence
+# TODO: use aroud line 92 instead of np.flip(np.argsort(h))?
 @cache
 def argsort(seq:tuple) -> tuple:
     return tuple(sorted(range(len(seq)), key=seq.__getitem__))
@@ -88,7 +89,7 @@ def character(n, Lambda, Mu):
                 break
 
         if continue_flag: 
-            chi+= parity(argsort(tuple(h))) # parity(np.flip(np.argsort(h)))
+            chi+= parity(tuple(np.flip(np.argsort(h))))
             j = m-1
 
         z[j]+=1
