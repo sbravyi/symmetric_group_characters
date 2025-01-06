@@ -1,11 +1,23 @@
 import numpy as np
+np.float_ = np.float64 # for compatibility with the MPS package
+np.complex_ = np.complex128 # for compatibility with the MPS package and NumPy 2.0 
+
+import collections
+collections.Sequence = collections.abc.Sequence # for compatibility with the MPS package
+collections.Iterator = collections.abc.Iterator # for compatibility with the MPS package
+
 import mpnum as mp # MPS/MPO package
 import random
 import itertools
 import time
+from functools import cache
 from math import factorial
 
-# parity of a permutation that sorts an integer sequence s
+
+
+# parity of a permutation that sorts an integer sequence 
+
+# NOTE: the cache decorator keeps the results of the function in memory, so that it does not need to be recomputed
 def parity(s):
     assert(len(np.unique(s))==len(s))
     p = True
