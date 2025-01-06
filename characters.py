@@ -1,4 +1,11 @@
 import numpy as np
+np.float_ = np.float64 # for compatibility with the MPS package
+np.complex_ = np.complex128 # for compatibility with the MPS package and NumPy 2.0 
+
+import collections
+collections.Sequence = collections.abc.Sequence # for compatibility with the MPS package
+collections.Iterator = collections.abc.Iterator # for compatibility with the MPS package
+
 import mpnum as mp # MPS/MPO package
 import random
 import itertools
