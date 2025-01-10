@@ -7,6 +7,7 @@ from math import factorial
 
 # MPS algorithm for Kostka Numbers
 # computes Kostkas for a given weight vector Mu
+# we assume that Mu is given in non-increasing order
 class KostkaBuilder: 
 
     # Input: 
@@ -20,12 +21,34 @@ class KostkaBuilder:
         self.tensor0 = np.zeros((1,2,1))
         self.tensor0[0,0,0] = 1 # basis state |0>
         self.get_MPS() 
+    
+    # Determines if lambda >= Mu in majorization order
+    # Input:
+    # Lambda: a list of non-increasing positive integers summing to n
+    def majorize(self, Lambda):
+        sum_mu = 0
+        sum_lm = 0
+        
+        for i in range(min(len(Lambda), len(self.Mu))):
+            sum_mu += Mu[i]
+            sum_lm += Lambda[i]
+            if sum_mu > sum_lm:
+                return False
+        if np.sum(self.Mu) == np.sum(Lambda):
+            return True
+        else:
+            return False
         
     # Computes the Kostka K_lambda,Mu for a partition Lambda
     # Input:
     # Lambda: a non-increasing list of positive integers summing to n
-    def get_kostka(self, Lambda):
+    def get_kostka(self, Lambda, maj=True):
         assert(len(Lambda) <= self.n)
+        # check majorization condition before computing amplitudes
+        if maj:
+            if not self.majorize(Lambda):
+                return 0
+        
         padded_Lambda = list(Lambda) + [0]*(self.n - len(Lambda))
         array = [self.tensor0]*(2*self.n)
         for i in range(self.n):
@@ -33,12 +56,15 @@ class KostkaBuilder:
         basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         return mp.mparray.inner(basis_state_mps,self.mps)
     
+    # Converts i in range [base**2] to a pair of indices [a,b]
     def num2index(self, i,  base):
         return [int(i/base), i % base]
-        
+    
+    # Converts a pair of indices [a,b] to an integer in base "base"
     def index2num(self, index,base):
         return index[0]*base + index[1]
     
+    # Returns a MPO representing (operator) complete symmetric polynomials
     def getMPO(self, k):
         
         array = []
@@ -60,6 +86,7 @@ class KostkaBuilder:
             tensor[self.index2num([i+1, i], k+1), :, :, self.index2num([i+2, i+1],k+1)] = np.array([[1,0],[0,0]])
         
         tensor[self.index2num([k-1, k-1], k+1), :, :, self.index2num([k-1, k-1],k+1)] = np.eye(2)
+        tensor[self.index2num([k-1, k-1], k+1), :, :, self.index2num([k, k-1], k+1)] = np.array([[0,1],[0,0]])
         tensor[self.index2num([k,k-1], k+1), :, :, self.index2num([k, k], k+1)] = np.array([[0,0],[1,0]])
         tensor[self.index2num([k, k], k+1), :, :, self.index2num([k, k], k+1)] = np.eye(2)
         
@@ -94,7 +121,7 @@ def partitions(n, I=1):
             yield (i,) + p
             
 
-n = 1
+n = 10
 
 # compute all partitions of n
 Pn = [list(p) for p in list(partitions(n))]
