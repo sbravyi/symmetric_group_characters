@@ -1,9 +1,8 @@
 import numpy as np
 import mpnum as mp # MPS/MPO package
 import random
-import itertools
 import time
-from math import factorial
+# from sage.libs.symmetrica import symmetrica as sym # For some reason calling Sage causes errors
 
 # MPS algorithm for Kostka Numbers
 # computes Kostkas for a given weight vector Mu
@@ -143,3 +142,17 @@ for Lambda in Pn:
     table_mps[Lambda] = builder.get_kostka(Lambda)
 elapsed = time.time() - t
 print('MPS runtime=',"{0:.2f}".format(elapsed))
+
+# # compute all kostkas of weight Mu using sage
+# t = time.time()
+# table_sage = {}
+# for Lambda in Pn:
+#     table_sage[Lambda] =  sym.kostka_number_symmetrica(Lambda, Mu)
+# elapsed = time.time() - t
+# print('Sage runtime=',"{0:.2f}".format(elapsed))
+
+# check correctness of the MPS algorithm
+err_max = 0
+for Lambda in Pn:
+    err_max = max(err_max, np.abs(table_mps[Lambda]-table_sage[Lambda]))
+print('maximum approximation error=',err_max)
