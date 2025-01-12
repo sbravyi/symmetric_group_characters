@@ -1,8 +1,8 @@
 import numpy as np
 import mpnum as mp # MPS/MPO package
-import random
+import random as rm
 import time
-# from sage.libs.symmetrica import symmetrica as sym # For some reason calling Sage causes errors
+from sage.all import * # Bad practice but does not work otherwise
 
 # MPS algorithm for Kostka Numbers
 # computes Kostkas for a given weight vector Mu
@@ -14,7 +14,7 @@ class KostkaBuilder:
     def __init__(self, Mu):
         self.Mu = Mu
         self.n = np.sum(self.Mu)
-        self.relerr = 0 # relative error for MPS compression
+        self.relerr = 1e-5 # relative error for MPS compression
         self.tensor1 = np.zeros((1,2,1))
         self.tensor1[0,1,0] = 1 # basis state |1>
         self.tensor0 = np.zeros((1,2,1))
@@ -69,32 +69,32 @@ class KostkaBuilder:
         array = []
         
         # index ordering LUDR
-        
+
         # left boundary
-        tensor = np.zeros((1,2,2,(k+1)**2))
+        tensor = np.zeros((1,2,2,2*k+1))
         tensor[0, :, :, 0] = np.eye(2)
-        tensor[0, :, :, self.index2num([1,0], k+1)] = np.array([[0, 1], [0, 0]]) # annihilate
+        tensor[0, :, :, 1] = np.array([[0,1], [0,0]]) # annihilate
         array.append(tensor)
         
         # bulk
-        tensor = np.zeros(((k+1)**2, 2, 2, (k+1)**2))
-        for i in range(k-1):
-            tensor[self.index2num([i,i], k+1), :, :, self.index2num([i,i], k+1)] = np.eye(2)
-            tensor[self.index2num([i,i], k+1), : , :, self.index2num([i+1, i], k+1)] = np.array([[0,1],[0,0]])
-            tensor[self.index2num([i+1,i], k+1), :, :, self.index2num([i+1,i+1], k+1)] = np.array([[0,0],[1,0]])
-            tensor[self.index2num([i+1, i], k+1), :, :, self.index2num([i+2, i+1],k+1)] = np.array([[1,0],[0,0]])
-        
-        tensor[self.index2num([k-1, k-1], k+1), :, :, self.index2num([k-1, k-1],k+1)] = np.eye(2)
-        tensor[self.index2num([k-1, k-1], k+1), :, :, self.index2num([k, k-1], k+1)] = np.array([[0,1],[0,0]])
-        tensor[self.index2num([k,k-1], k+1), :, :, self.index2num([k, k], k+1)] = np.array([[0,0],[1,0]])
-        tensor[self.index2num([k, k], k+1), :, :, self.index2num([k, k], k+1)] = np.eye(2)
+        tensor = np.zeros((2*k+1, 2, 2, 2*k+1))
+        for i in range(k-1): # runs until k-2
+            tensor[2*i , :, : , 2*i] = np.eye(2)
+            tensor[2*i+1, :, :, 2*i+2] = np.array([[0,0],[1,0]])
+            tensor[2*i+1, :, :, 2*i+3] = np.array([[1,0],[0,0]])
+            tensor[2*i, :, :, 2*i+1] = np.array([[0,1],[0,0]])
+            
+        tensor[2*k-2, :, :, 2*k-2] = np.eye(2)
+        tensor[2*k-2, :, :, 2*k-1] = np.array([[0,1],[0,0]])
+        tensor[2*k-1, :, :, 2*k] = np.array([[0,0], [1,0]])
+        tensor[2*k, :, :, 2*k] = np.eye(2)
         
         array = array + (2*self.n-2)*[tensor]
         
         # right boundary 
-        tensor = np.zeros(((k+1)**2,2,2,1))
-        tensor[self.index2num([k,k], k+1), :, :, 0] = np.eye(2)
-        tensor[self.index2num([k, k-1], k+1), :, :, 0] = np.array([[0, 0],[1, 0]]) # create
+        tensor = np.zeros((2*k+1,2,2,1))
+        tensor[2*k, :, :, 0] = np.eye(2)
+        tensor[2*k-1, :, :, 0] = np.array([[0, 0],[1, 0]]) # create
         array.append(tensor)
         
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
@@ -120,7 +120,7 @@ def partitions(n, I=1):
             yield (i,) + p
             
 
-n = 10
+n = 15
 
 # compute all partitions of n
 Pn = [list(p) for p in list(partitions(n))]
@@ -131,28 +131,39 @@ Pn = [tuple(p) for p in Pn]
 print('n=',n)
 print('Number of partitions=',len(Pn))
 
-Mu = random.choice(Pn)
+#Mu = rm.choice(Pn)
+Mu = [1]*n # seems to be the slowest run time
 print('Weight Mu=',Mu)
 
 # compute all kostas of weight Mu using the MPS algorithm
 t = time.time()
 builder = KostkaBuilder(Mu)
+print("done building")
 table_mps = {}
 for Lambda in Pn:
     table_mps[Lambda] = builder.get_kostka(Lambda)
 elapsed = time.time() - t
 print('MPS runtime=',"{0:.2f}".format(elapsed))
 
-# # compute all kostkas of weight Mu using sage
-# t = time.time()
-# table_sage = {}
-# for Lambda in Pn:
-#     table_sage[Lambda] =  sym.kostka_number_symmetrica(Lambda, Mu)
-# elapsed = time.time() - t
-# print('Sage runtime=',"{0:.2f}".format(elapsed))
+def kos(Mu):
+    assert(np.sum(Mu) == n)
+    tt = time.time()
+    build = KostkaBuilder(Mu)
+    table = {}
+    for Lambda in Pn:
+        table[Lambda] = build.get_kostka(Lambda)
+    return table, time.time()-tt
 
-# check correctness of the MPS algorithm
+# compute all kostkas of weight Mu using sage
+t = time.time()
+table_sage = {}
+for Lambda in Pn:
+    table_sage[Lambda] =  symmetrica.kostka_number(Lambda, Mu)
+elapsed = time.time() - t
+print('Sage runtime=',"{0:.2f}".format(elapsed))
+
+#check correctness of the MPS algorithm
 err_max = 0
 for Lambda in Pn:
-    err_max = max(err_max, np.abs(table_mps[Lambda]-table_sage[Lambda]))
+   err_max = max(err_max, np.abs(table_mps[Lambda]-table_sage[Lambda]))
 print('maximum approximation error=',err_max)
