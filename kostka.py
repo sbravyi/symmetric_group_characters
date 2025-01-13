@@ -2,7 +2,15 @@ import numpy as np
 import mpnum as mp # MPS/MPO package
 import random as rm
 import time
+import collections
+import sys
+from functools import cache
 from sage.all import * # Bad practice but does not work otherwise
+
+# HACK: Fix compatibility of mpnum with Python 3.10 
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 7: 
+    collections.Sequence = collections.abc.Sequence
+    collections.Iterator = collections.abc.Iterator 
 
 # MPS algorithm for Kostka Numbers
 # computes Kostkas for a given weight vector Mu
@@ -56,14 +64,17 @@ class KostkaBuilder:
         return mp.mparray.inner(basis_state_mps,self.mps)
     
     # Converts i in range [base**2] to a pair of indices [a,b]
+    @cache
     def num2index(self, i,  base):
         return [int(i/base), i % base]
     
     # Converts a pair of indices [a,b] to an integer in base "base"
+    @cache
     def index2num(self, index,base):
         return index[0]*base + index[1]
     
     # Returns a MPO representing (operator) complete symmetric polynomials
+    @cache
     def getMPO(self, k):
         
         array = []
@@ -113,6 +124,7 @@ class KostkaBuilder:
 
 # generates all partitions of n 
 # source: https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
+@cache
 def partitions(n, I=1):
     yield (n,)
     for i in range(I, n//2 + 1):
@@ -145,7 +157,7 @@ for Lambda in Pn:
 elapsed = time.time() - t
 print('MPS runtime=',"{0:.2f}".format(elapsed))
 
-def kos(Mu):
+def kos(Mu):  # TODO: pass n as an argument? 
     assert(np.sum(Mu) == n)
     tt = time.time()
     build = KostkaBuilder(Mu)
