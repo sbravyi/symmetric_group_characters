@@ -6,4 +6,4 @@ Example of how to use the algorithm can be found in example.py
 
 Implementation of the MPS algorithm based on mpnum library https://mpnum.readthedocs.io/en/latest/ can be found in character_builder.py
 
-Implementation of the MPS algorithm based on quimb library can be found in character_builder_quimb.py
+Implementation of the MPS algorithm based on quimb library https://quimb.readthedocs.io/en/latest/ can be found in character_builder_quimb.py
