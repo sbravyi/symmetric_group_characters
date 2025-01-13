@@ -2,6 +2,7 @@ import numpy as np
 
 # MPNUM is no longer maintained.
 # The following fixes dependency issues for numpy 2.0
+print(np.version.version)
 if np.version.version > '2.0':
     np.float_ = np.float64
     np.complex_ = np.complex128
@@ -12,6 +13,7 @@ import collections
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Sequence = collections.abc.Sequence
     collections.Iterable = collections.abc.Iterable
+    collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
 
