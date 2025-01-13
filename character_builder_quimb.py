@@ -10,10 +10,6 @@ class CharacterBuilder:
         self.Mu = list(np.sort(Mu))
         self.n = np.sum(self.Mu)
         self.relerr = 1e-10 # relative error for MPS compression
-        self.tensor1 = np.zeros((1,2,1))
-        self.tensor1[0,1,0] = 1 # basis state |1>
-        self.tensor0 = np.zeros((1,2,1))
-        self.tensor0[0,0,0] = 1 # basis state |0>
         self.qubits = [i for i in range(2*self.n)]
         # compute the MPS that encodes all characters of Mu
         self.get_MPS()
