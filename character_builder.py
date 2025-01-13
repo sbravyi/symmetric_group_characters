@@ -2,7 +2,6 @@ import numpy as np
 
 # MPNUM is no longer maintained.
 # The following fixes dependency issues for numpy 2.0
-print(np.version.version)
 if np.version.version > '2.0':
     np.float_ = np.float64
     np.complex_ = np.complex128
