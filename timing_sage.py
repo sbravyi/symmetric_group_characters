@@ -35,7 +35,7 @@ for Mu in SelectMu:
     t = time.time()
     table = {}
     for Lambda in Pn:
-        table[Lambda] =  symmetrica.charvalue(Lambda,Mu)
+        table[Lambda] =  int(symmetrica.charvalue(Lambda,Mu))
     sage_runtime = time.time() - t
     print('sage runtime=',"{0:.5f}".format(sage_runtime))
     result_entry['sage_runtime'] = sage_runtime
@@ -47,7 +47,7 @@ for Mu in SelectMu:
 
 file_name = './DATA/sage_data.dat'
 with open(file_name, 'wb') as fp:
-    pickle.dump(result, fp, protocol=4)
+    pickle.dump(result, fp)
 print('Done')
 
 print('file_name=',file_name)
