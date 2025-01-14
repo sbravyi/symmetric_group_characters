@@ -2,7 +2,8 @@ import numpy as np
 import mpnum as mp # MPS/MPO package
 import random as rm
 import time
-from sage.all import * # Bad practice but does not work otherwise
+from sage.all import * # SageMath package
+from functools import cache 
 
 # MPS algorithm for Kostka Numbers
 # computes Kostkas for a given weight vector Mu
@@ -11,10 +12,10 @@ class KostkaBuilder:
 
     # Input: 
     # Mu : a list of positive integers that sums up to n. 
-    def __init__(self, Mu):
+    def __init__(self, Mu, relerr=1e-10):
         self.Mu = Mu
         self.n = np.sum(self.Mu)
-        self.relerr = 1e-5 # relative error for MPS compression
+        self.relerr = relerr # relative error for MPS compression
         self.tensor1 = np.zeros((1,2,1))
         self.tensor1[0,1,0] = 1 # basis state |1>
         self.tensor0 = np.zeros((1,2,1))
@@ -56,10 +57,12 @@ class KostkaBuilder:
         return mp.mparray.inner(basis_state_mps,self.mps)
     
     # Converts i in range [base**2] to a pair of indices [a,b]
+    @cache
     def num2index(self, i,  base):
         return [int(i/base), i % base]
     
     # Converts a pair of indices [a,b] to an integer in base "base"
+    @cache
     def index2num(self, index,base):
         return index[0]*base + index[1]
     
@@ -119,51 +122,3 @@ def partitions(n, I=1):
         for p in partitions(n-i, i):
             yield (i,) + p
             
-
-n = 15
-
-# compute all partitions of n
-Pn = [list(p) for p in list(partitions(n))]
-for p in Pn:
-    p.reverse()
-Pn = [tuple(p) for p in Pn]
-
-print('n=',n)
-print('Number of partitions=',len(Pn))
-
-#Mu = rm.choice(Pn)
-Mu = [1]*n # seems to be the slowest run time
-print('Weight Mu=',Mu)
-
-# compute all kostas of weight Mu using the MPS algorithm
-t = time.time()
-builder = KostkaBuilder(Mu)
-print("done building")
-table_mps = {}
-for Lambda in Pn:
-    table_mps[Lambda] = builder.get_kostka(Lambda)
-elapsed = time.time() - t
-print('MPS runtime=',"{0:.2f}".format(elapsed))
-
-def kos(Mu):
-    assert(np.sum(Mu) == n)
-    tt = time.time()
-    build = KostkaBuilder(Mu)
-    table = {}
-    for Lambda in Pn:
-        table[Lambda] = build.get_kostka(Lambda)
-    return table, time.time()-tt
-
-# compute all kostkas of weight Mu using sage
-t = time.time()
-table_sage = {}
-for Lambda in Pn:
-    table_sage[Lambda] =  symmetrica.kostka_number(Lambda, Mu)
-elapsed = time.time() - t
-print('Sage runtime=',"{0:.2f}".format(elapsed))
-
-#check correctness of the MPS algorithm
-err_max = 0
-for Lambda in Pn:
-   err_max = max(err_max, np.abs(table_mps[Lambda]-table_sage[Lambda]))
-print('maximum approximation error=',err_max)
