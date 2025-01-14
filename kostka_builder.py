@@ -30,7 +30,7 @@ class KostkaBuilder:
         sum_lm = 0
         
         for i in range(min(len(Lambda), len(self.Mu))):
-            sum_mu += Mu[i]
+            sum_mu += self.Mu[i]
             sum_lm += Lambda[i]
             if sum_mu > sum_lm:
                 return False

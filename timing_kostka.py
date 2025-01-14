@@ -3,6 +3,7 @@ import time
 import pickle
 from character_builder import get_partitions
 from kostka_builder import KostkaBuilder
+from sage.all import * 
 
 n = 15
 
@@ -42,7 +43,7 @@ def kos(Mu):
 t = time.time()
 table_sage = {}
 for Lambda in Pn:
-    table_sage[Lambda] =  symmetrica.kostka_number(Lambda, Mu)
+    table_sage[Lambda] = symmetrica.kostka_number(Lambda, Mu) # symmetrica is a sage package
 elapsed = time.time() - t
 print('Sage runtime=',"{0:.2f}".format(elapsed))
 
