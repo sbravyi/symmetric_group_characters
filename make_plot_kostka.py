@@ -7,7 +7,7 @@ start = 10
 stop = 36
 step = 4
 relerr = 1e-12
-path = './'
+path = './DATA/'
 
 # plot run times of MPS vs kostka
 xarr = []
@@ -16,7 +16,7 @@ yarr_sage = []
 
 # loop through files
 for n in range(start, stop, step):
-    f_name = path+str(n)+'_'+str(relerr)+'.txt'
+    f_name = path+'kostka_'+str(n)+'_'+str(relerr)+'.dat'
     with open(f_name, "r") as f:
         for line in f:
             run_data = json.loads(line.strip()) # data from an individual run
