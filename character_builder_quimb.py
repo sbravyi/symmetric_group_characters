@@ -2,9 +2,7 @@ import numpy as np
 import quimb.tensor as qtn
 from quimb.tensor.tensor_1d_compress import mps_gate_with_mpo_direct
 
-# MPS algorithm for characters of the symmetric group S_n described in arX
-
-
+# MPS algorithm for characters of the symmetric group S_n described in arXiv 2501.
 class CharacterBuilder:
 
     # Takes as input a conjugacy class Mu of S_n specified as a list of
