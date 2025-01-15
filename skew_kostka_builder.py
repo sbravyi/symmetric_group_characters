@@ -1,14 +1,21 @@
 import numpy as np
 import mpnum as mp # MPS/MPO package
 
-# MPS algorithm for skew Kostka numbers
-# computes Kostkas for a given weight vector Mu and skew Nu
-# we assume that Mu is given in non-increasing order
-class SkewKostkaBuilder: 
+from utils import majorize
 
-    # Input: 
-    # Mu : a list of positive integers that sums up to n. 
-    def __init__(self, Mu, Nu=[0], relerr=1e-14):
+
+class SkewKostkaBuilder: 
+    def __init__(self, Mu:tuple[int], Nu:tuple[int]=(0, ), relerr=1e-14):
+        """
+        MPS algorithm for skew Kostka numbers.
+
+        Computes Kostkas for a given weight vector Mu and skew Nu.
+
+        Args:
+            Mu (tuple[int]): we assume that Mu is given in non-increasing order
+            Nu (tuple[int], optional): _description_. Defaults to (0, ).
+            relerr (_type_, optional): _description_. Defaults to 1e-14.
+        """
         self.Mu = Mu
         self.n = np.sum(self.Mu)
         # m is the size of partitions such that Lambda \ Nu is valid
@@ -44,24 +51,9 @@ class SkewKostkaBuilder:
         self.cacheC2 = {}
         self.cacheR = {}
     
-    # Determines if lambda >= eta in majorization order
-    # Input:
-    # Lambda & Eta: non-increasing lists of natural numbers
-    def majorize(self, Eta, Lambda):
-        sum_eta = 0
-        sum_lm = 0
-        
-        for i in range(min(len(Lambda), len(Eta))):
-            sum_eta += Eta[i]
-            sum_lm += Lambda[i]
-            if sum_eta > sum_lm:
-                return False
-            
-        return True
-    
     # Determines if Lamba \ Nu has enough boxes to have weight Mu
     def valid_skew(self, Lambda):
-        return self.majorize(self.Nu, Lambda) and sum(Lambda) == self.m
+        return majorize(self.Nu, Lambda) and sum(Lambda) == self.m
         
         
     # Computes the skew Kostka K_Lambda\Nu,Mu for a partition Lambda

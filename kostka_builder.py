@@ -1,25 +1,32 @@
 import numpy as np
-import mpnum as mp # MPS/MPO package 
-from math import lgamma, exp
+import mpnum as mp  # MPS/MPO package
+from utils import majorize
 
-# MPS algorithm for Kostka Numbers
-# computes Kostkas for a given weight vector Mu
-# we assume that Mu is given in non-increasing order
-# Cached version
-class KostkaBuilder: 
 
-    # Input: 
-    # Mu : a list of positive integers that sums up to n. 
-    def __init__(self, Mu, relerr=1e-10):
+class KostkaBuilder:
+
+    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
+        """
+        MPS algorithm for Kostka numbers of the symmetric group S_n described in arX
+
+        Takes as input a partition Mu of n specified as a list of
+        positive integers in nonincreasing order that sum to n.
+
+        Cache partial products of MPS matrices over each interval.
+
+        Args:
+            Mu (tuple[int]): S_n partition as a list of positive integers in nonincreasing order that sum up to n.
+            relerr (float, optional): MPS compression error. Defaults to 1e-10.
+        """
         self.Mu = Mu
         self.n = np.sum(self.Mu)
-        self.relerr = relerr # relative error for MPS compression
-        self.tensor1 = np.zeros((1,2,1))
-        self.tensor1[0,1,0] = 1 # basis state |1>
-        self.tensor0 = np.zeros((1,2,1))
-        self.tensor0[0,0,0] = 1 # basis state |0>
+        self.relerr = relerr  # relative error for MPS compression
+        self.tensor1 = np.zeros((1, 2, 1))
+        self.tensor1[0, 1, 0] = 1  # basis state |1>
+        self.tensor0 = np.zeros((1, 2, 1))
+        self.tensor0[0, 0, 0] = 1  # basis state |0>
         self.get_MPS()
-        
+
         # divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
         self.n1 = int(np.round(self.n / 2))
@@ -40,44 +47,35 @@ class KostkaBuilder:
         self.cacheC1 = {}
         self.cacheC2 = {}
         self.cacheR = {}
-    
-    # Determines if lambda >= Mu in majorization order
-    # Input:
-    # Lambda: a list of non-increasing positive integers summing to n
-    def majorize(self, Mu, Lambda):
-        sum_mu = 0
-        sum_lm = 0
-        
-        for i in range(min(len(Lambda), len(Mu))):
-            sum_mu += Mu[i]
-            sum_lm += Lambda[i]
-            if sum_mu > sum_lm:
-                return False
-        if np.sum(Mu) == np.sum(Lambda):
-            return True
-        else:
-            return False
-        
-    # Computes the Kostka K_lambda,Mu for a partition Lambda
-    # Input:
-    # Lambda: a non-increasing list of positive integers summing to n
-    def get_kostka(self, Lambda, maj=True):
-        assert(len(Lambda) <= self.n)
+
+    def get_kostka(self, Lambda: tuple[int], maj: bool = True) -> int:
+        """
+        Computes the Kostka K_lambda,Mu for a partition Lambda
+
+        Args:
+            Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
+            maj (bool, optional): Check if Lambda majorizes Lambda for early termination. Defaults to True.
+
+        Returns:
+            int: _description_
+        """
+
+        assert (len(Lambda) <= self.n)
         # check majorization condition before computing amplitudes
         if maj:
-            if not self.majorize(self.Mu, Lambda):
+            if not majorize(self.Mu, Lambda):
                 return 0
-        
-        padded_Lambda = list(Lambda) + [0]*(self.n - len(Lambda))    
+
+        padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
         if self.n < 8:
-             # don't use caching for small n's
-             array = [self.tensor0] * (2 * self.n)
-             for i in range(self.n):
-                 array[padded_Lambda[i] + self.n - 1 - i] = self.tensor1
-             basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
-             # compute inner product between a basis state and the MPS
-             return mp.mparray.inner(basis_state_mps, self.mps)
-        
+            # don't use caching for small n's
+            array = [self.tensor0] * (2 * self.n)
+            for i in range(self.n):
+                array[padded_Lambda[i] + self.n - 1 - i] = self.tensor1
+            basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
+            # compute inner product between a basis state and the MPS
+            return mp.mparray.inner(basis_state_mps, self.mps)
+
         bitstring = np.zeros(2 * self.n, dtype=int)
         supp = [padded_Lambda[i] + self.n - i - 1 for i in range(self.n)]
         bitstring[supp] = 1
@@ -86,7 +84,7 @@ class KostkaBuilder:
         xC1 = bitstring[self.C1]
         xC2 = bitstring[self.C2]
         xR = bitstring[self.R]
-        
+
         if not (tuple(xL) in self.cacheL):
             self.cacheL[tuple(xL)] = np.linalg.multi_dot(
                 [self.mps.lt[self.L[i]][:, xL[i], :] for i in range(self.nL)])
@@ -109,68 +107,60 @@ class KostkaBuilder:
         chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
-    
-    # Returns a MPO representing (operator) complete symmetric polynomials
-    def getMPO(self, k):
-        
+
+    def getMPO(self, k: int) -> mp.MPArray:
+        """
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+
+        Args:
+            k (int): parameter specifying the current operator J_k.
+
+        Returns:
+            mp.MPArray: MPO representation of the current operator J_k.
+        """
+
         array = []
-        
+
         # index ordering LUDR
 
         # left boundary
-        tensor = np.zeros((1,2,2,2*k+1))
+        tensor = np.zeros((1, 2, 2, 2 * k + 1))
         tensor[0, :, :, 0] = np.eye(2)
-        tensor[0, :, :, 1] = np.array([[0,1], [0,0]]) # annihilate
+        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])  # annihilate
         array.append(tensor)
-        
+
         # bulk
-        tensor = np.zeros((2*k+1, 2, 2, 2*k+1))
-        for i in range(k-1):
-            tensor[2*i , :, : , 2*i] = np.eye(2)
-            tensor[2*i+1, :, :, 2*i+2] = np.array([[0,0],[1,0]])
-            tensor[2*i+1, :, :, 2*i+3] = np.array([[1,0],[0,0]])
-            tensor[2*i, :, :, 2*i+1] = np.array([[0,1],[0,0]])
-            
-        tensor[2*k-2, :, :, 2*k-2] = np.eye(2)
-        tensor[2*k-2, :, :, 2*k-1] = np.array([[0,1],[0,0]])
-        tensor[2*k-1, :, :, 2*k] = np.array([[0,0], [1,0]])
-        tensor[2*k, :, :, 2*k] = np.eye(2)
-        
-        array = array + (2*self.n-2)*[tensor]
-        
-        # right boundary 
-        tensor = np.zeros((2*k+1,2,2,1))
-        tensor[2*k, :, :, 0] = np.eye(2)
-        tensor[2*k-1, :, :, 0] = np.array([[0, 0],[1, 0]]) # create
+        tensor = np.zeros((2 * k + 1, 2, 2, 2 * k + 1))
+        for i in range(k - 1):
+            tensor[2 * i, :, :, 2 * i] = np.eye(2)
+            tensor[2 * i + 1, :, :, 2 * i + 2] = np.array([[0, 0], [1, 0]])
+            tensor[2 * i + 1, :, :, 2 * i + 3] = np.array([[1, 0], [0, 0]])
+            tensor[2 * i, :, :, 2 * i + 1] = np.array([[0, 1], [0, 0]])
+
+        tensor[2 * k - 2, :, :, 2 * k - 2] = np.eye(2)
+        tensor[2 * k - 2, :, :, 2 * k - 1] = np.array([[0, 1], [0, 0]])
+        tensor[2 * k - 1, :, :, 2 * k] = np.array([[0, 0], [1, 0]])
+        tensor[2 * k, :, :, 2 * k] = np.eye(2)
+
+        array = array + (2 * self.n - 2) * [tensor]
+
+        # right boundary
+        tensor = np.zeros((2 * k + 1, 2, 2, 1))
+        tensor[2 * k, :, :, 0] = np.eye(2)
+        tensor[2 * k - 1, :, :, 0] = np.array([[0, 0], [1, 0]])  # create
         array.append(tensor)
-        
+
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
     def get_MPS(self):
-        # MPS representation of the initial state |1^n 0^n>
-        array = self.n*[self.tensor1] + self.n*[self.tensor0]
-        self.mps  = mp.MPArray(mp.mpstruct.LocalTensors(array))
+        """
+        Updates the MPS representation of the initial state |1^n 0^n> and applies the sequence of the h_k's using MPO-MPS multiplication.
+        """
+        array = self.n * [self.tensor1] + self.n * [self.tensor0]
+        self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the h_k's using MPO-MPS multiplication
         for k in self.Mu:
             mpo = self.getMPO(k)
             self.mps = mp.dot(mpo, self.mps)
             self.mps.compress(method='svd', relerr=self.relerr)
         self.MPSready = True
-
-
-# Generates all partitions of n 
-# source: https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
-def partitions(n, I=1):
-    yield (n,)
-    for i in range(I, n//2 + 1):
-        for p in partitions(n-i, i):
-            yield (i,) + p
-  
-# Returns the dimension of the permutation module of label Mu
-# Recall that M^Mu is the trivial irrep of S_mu = S_mu_1 x S_mu_2 x ...
-#   induced to S_n
-def perm_module_d(Mu):
-    val = lgamma(sum(Mu)+1)
-    for part in Mu:
-        val -= lgamma(part+1)
-    return int(round(exp(val)))        

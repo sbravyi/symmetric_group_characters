@@ -2,19 +2,34 @@ import numpy as np
 import quimb.tensor as qtn
 from quimb.tensor.tensor_1d_compress import mps_gate_with_mpo_direct
 
-# MPS algorithm for characters of the symmetric group S_n described in arXiv 2501.
+
 class CharacterBuilder:
 
-    # Takes as input a conjugacy class Mu of S_n specified as a list of
-    # positive integers that sum to n
-    def __init__(self, Mu, relerr=1e-10):
+    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
+        """
+        MPS algorithm for characters of the symmetric group S_n described in arXiv 2501.
+
+        Args:
+            Mu (tuple[int]): S_n conjugacy class as a list of positive integers that sum up to n.
+            relerr (float, optional): Relative error for MPS compression. Defaults to 1e-10.
+        """
         self.Mu = list(np.sort(Mu))
         self.n = np.sum(self.Mu)
-        self.relerr = relerr  # relative error for MPS compression
+        self.relerr = relerr
         self.qubits = [i for i in range(2 * self.n)]
         self.get_MPS()  # compute the MPS that encodes all characters of Mu
 
-    def get_character(self, Lambda):
+    def get_character(self, Lambda: tuple[int]) -> int:
+        """
+        Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
+        Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
+
+        Args:
+            Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.
+
+        Returns:
+            int: character chi_Lambda(Mu)
+        """
         assert (len(Lambda) <= self.n)
         padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
         bit_string = np.zeros(2 * self.n, dtype=int)
@@ -22,23 +37,31 @@ class CharacterBuilder:
         bit_string[supp] = 1
         return self.mps.amplitude(bit_string)
 
-    # MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag
+    def getMPO(self, k: int) -> qtn.tensor_1d.MatrixProductOperator:
+        """
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+        See Crichigno and Prakash; arXiv:2404.04322 or arXiv:2501.
 
-    def getMPO(self, k):
+        Args:
+            k (int): parameter specifying the current operator J_k.
+
+        Returns:
+            qtn.tensor_1d.MatrixProductOperator: MPO representation of the current operator J_k.
+        """
 
         array = []
 
-        # left boundary
-        tensor = np.zeros((k + 2, 2, 2))
+        tensor = np.zeros((k + 2, 2, 2))  # left boundary
         tensor[0, :, :] = np.eye(2)
+
         # flip qubit from '1' to '0'
         tensor[1, :, :] = np.array([[0, 1], [0, 0]])
         array.append(tensor)
 
-        # bulk
-        tensor = np.zeros((k + 2, k + 2, 2, 2))
+        tensor = np.zeros((k + 2, k + 2, 2, 2))  # bulk
         tensor[0, 0, :, :] = np.eye(2)
         tensor[k + 1, k + 1, :, :] = np.eye(2)
+
         # flip qubit from '1' to '0'
         tensor[0, 1, :, :] = np.array([[0, 1], [0, 0]])
         # flip qubit from '0' to '1'
@@ -50,8 +73,7 @@ class CharacterBuilder:
 
         array = array + (2 * self.n - 2) * [tensor]
 
-        # right boundary
-        tensor = np.zeros((k + 2, 2, 2))
+        tensor = np.zeros((k + 2, 2, 2))  # right boundary
         tensor[k + 1, :, :] = np.eye(2)
         # flip qubit from '0' to '1'
         tensor[k, :, :] = np.array([[0, 0], [1, 0]])
@@ -66,6 +88,7 @@ class CharacterBuilder:
             site_tag_id='I{}')
 
     def get_MPS(self):
+
 
         # MPS representation of the initial vacuum state
         tensor0 = np.zeros((1, 2))
@@ -94,20 +117,9 @@ class CharacterBuilder:
                 cutoff=self.relerr,
                 cutoff_mode='rsum1',
                 inplace=True)
+            
+        # TODO: compress the MPS
+        # TODO: make this return. 
+        return self.mps 
 
-
-# generates all partitions of n
-# source:
-# https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
-def partitions(n, I=1):
-    yield (n,)
-    for i in range(I, n // 2 + 1):
-        for p in partitions(n - i, i):
-            yield (i,) + p
-
-
-def get_partitions(n):
-    Pn = [list(p) for p in list(partitions(n))]
-    for p in Pn:
-        p.reverse()
-    return [tuple(p) for p in Pn]
+    
