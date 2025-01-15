@@ -1,24 +1,27 @@
 import numpy as np
-import mpnum as mp # MPS/MPO package 
-from math import lgamma, exp
+import mpnum as mp # MPS/MPO package
 
-# MPS algorithm for Kostka Numbers
-# computes Kostkas for a given weight vector Mu
+# MPS algorithm for skew Kostka numbers
+# computes Kostkas for a given weight vector Mu and skew Nu
 # we assume that Mu is given in non-increasing order
-# Cached version
-class KostkaBuilder: 
+class SkewKostkaBuilder: 
 
     # Input: 
     # Mu : a list of positive integers that sums up to n. 
-    def __init__(self, Mu, relerr=1e-10):
+    def __init__(self, Mu, Nu=[0], relerr=1e-14):
         self.Mu = Mu
         self.n = np.sum(self.Mu)
+        # m is the size of partitions such that Lambda \ Nu is valid
+        self.m = self.n+np.sum(Nu)
+        assert(len(Nu) <= self.n)
+        assert(sum(Nu) <= self.n)
+        self.Nu = Nu + [0]*(self.m-len(Nu)) # Pad Nu with 0s
         self.relerr = relerr # relative error for MPS compression
         self.tensor1 = np.zeros((1,2,1))
         self.tensor1[0,1,0] = 1 # basis state |1>
         self.tensor0 = np.zeros((1,2,1))
         self.tensor0[0,0,0] = 1 # basis state |0>
-        self.get_MPS()
+        self.get_MPS() 
         
         # divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
@@ -41,34 +44,36 @@ class KostkaBuilder:
         self.cacheC2 = {}
         self.cacheR = {}
     
-    # Determines if lambda >= Mu in majorization order
+    # Determines if lambda >= eta in majorization order
     # Input:
-    # Lambda: a list of non-increasing positive integers summing to n
-    def majorize(self, Mu, Lambda):
-        sum_mu = 0
+    # Lambda & Eta: non-increasing lists of natural numbers
+    def majorize(self, Eta, Lambda):
+        sum_eta = 0
         sum_lm = 0
         
-        for i in range(min(len(Lambda), len(Mu))):
-            sum_mu += Mu[i]
+        for i in range(min(len(Lambda), len(Eta))):
+            sum_eta += Eta[i]
             sum_lm += Lambda[i]
-            if sum_mu > sum_lm:
+            if sum_eta > sum_lm:
                 return False
-        if np.sum(Mu) == np.sum(Lambda):
-            return True
-        else:
-            return False
+            
+        return True
+    
+    # Determines if Lamba \ Nu has enough boxes to have weight Mu
+    def valid_skew(self, Lambda):
+        return self.majorize(self.Nu, Lambda) and sum(Lambda) == self.m
         
-    # Computes the Kostka K_lambda,Mu for a partition Lambda
+        
+    # Computes the skew Kostka K_Lambda\Nu,Mu for a partition Lambda
     # Input:
     # Lambda: a non-increasing list of positive integers summing to n
-    def get_kostka(self, Lambda, maj=True):
-        assert(len(Lambda) <= self.n)
+    def get_kostka(self, Lambda, valid=True):
         # check majorization condition before computing amplitudes
-        if maj:
-            if not self.majorize(self.Mu, Lambda):
+        if valid:
+            if not self.valid_skew(Lambda):
                 return 0
         
-        padded_Lambda = list(Lambda) + [0]*(self.n - len(Lambda))    
+        padded_Lambda = list(Lambda) + [0]*(self.m - len(Lambda))
         if self.n < 8:
              # don't use caching for small n's
              array = [self.tensor0] * (2 * self.n)
@@ -125,7 +130,7 @@ class KostkaBuilder:
         
         # bulk
         tensor = np.zeros((2*k+1, 2, 2, 2*k+1))
-        for i in range(k-1):
+        for i in range(k-1): # runs until k-2
             tensor[2*i , :, : , 2*i] = np.eye(2)
             tensor[2*i+1, :, :, 2*i+2] = np.array([[0,0],[1,0]])
             tensor[2*i+1, :, :, 2*i+3] = np.array([[1,0],[0,0]])
@@ -136,7 +141,7 @@ class KostkaBuilder:
         tensor[2*k-1, :, :, 2*k] = np.array([[0,0], [1,0]])
         tensor[2*k, :, :, 2*k] = np.eye(2)
         
-        array = array + (2*self.n-2)*[tensor]
+        array = array + (2*self.m-2)*[tensor]
         
         # right boundary 
         tensor = np.zeros((2*k+1,2,2,1))
@@ -147,8 +152,14 @@ class KostkaBuilder:
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
     def get_MPS(self):
-        # MPS representation of the initial state |1^n 0^n>
-        array = self.n*[self.tensor1] + self.n*[self.tensor0]
+        array = [] # Local tensors
+        # Traverse Nu in reverse order
+        array += [self.tensor0]*self.Nu[self.m-1] # step right
+        array += [self.tensor1] # step up
+        for i in range(self.m-1, 0, -1):
+            array += [self.tensor0]*(self.Nu[i-1]-self.Nu[i]) # step right
+            array += [self.tensor1] # step up
+        array = array + [self.tensor0]*(2*self.m-len(array)) # step right
         self.mps  = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the h_k's using MPO-MPS multiplication
         for k in self.Mu:
@@ -158,19 +169,10 @@ class KostkaBuilder:
         self.MPSready = True
 
 
-# Generates all partitions of n 
+# generates all partitions of n 
 # source: https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
 def partitions(n, I=1):
     yield (n,)
     for i in range(I, n//2 + 1):
         for p in partitions(n-i, i):
             yield (i,) + p
-  
-# Returns the dimension of the permutation module of label Mu
-# Recall that M^Mu is the trivial irrep of S_mu = S_mu_1 x S_mu_2 x ...
-#   induced to S_n
-def perm_module_d(Mu):
-    val = lgamma(sum(Mu)+1)
-    for part in Mu:
-        val -= lgamma(part+1)
-    return int(round(exp(val)))        
