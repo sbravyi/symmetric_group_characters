@@ -1,8 +1,8 @@
 import numpy as np
 import time
 import pickle
-from character_builder import CharacterBuilder, get_partitions
-
+from character_builder import CharacterBuilder
+from utils import get_partitions
 
 
 # stores all computation results and runtime

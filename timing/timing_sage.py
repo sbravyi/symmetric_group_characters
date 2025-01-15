@@ -2,7 +2,7 @@ from sage.all import symmetrica
 import numpy as np
 import time
 import pickle
-from character_builder import get_partitions
+from utils import get_partitions
 
 
 result = []

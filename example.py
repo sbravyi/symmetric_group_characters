@@ -9,8 +9,8 @@ n = 8
 Pn = get_partitions(n)
 
 Mu = random.choice(Pn)
-print('n=',n)
-print('Conjugacy class Mu=',Mu)
+print('n=', n)
+print('Conjugacy class Mu=', Mu)
 
 # compute MPS that encodes all characters of Mu
 builder = CharacterBuilder(Mu)
@@ -18,4 +18,4 @@ builder = CharacterBuilder(Mu)
 # compute all characters of Mu
 for Lambda in Pn:
     chi = builder.get_character(Lambda)
-    print('irrep Lambda=',Lambda,'character=',chi)
+    print('irrep Lambda=', Lambda, 'character=', chi)

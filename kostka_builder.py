@@ -79,7 +79,7 @@ class KostkaBuilder:
         bitstring = np.zeros(2 * self.n, dtype=int)
         supp = [padded_Lambda[i] + self.n - i - 1 for i in range(self.n)]
         bitstring[supp] = 1
-        
+
         # project bitstring onto each caching register
         xL = bitstring[self.L]
         xC1 = bitstring[self.C1]

@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-from character_builder import get_partitions
+from utils import get_partitions
 
 
 file_name = 'mps_data.dat'

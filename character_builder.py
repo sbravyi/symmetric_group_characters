@@ -1,6 +1,6 @@
 import numpy as np
 
-# NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations! 
+# NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations!
 # The following fixes dependency issues for numpy 2.0
 if np.version.version > '2.0':
     np.float_ = np.float64
@@ -19,7 +19,7 @@ import mpnum as mp  # MPS/MPO simulation package
 
 class CharacterBuilder:
 
-    def __init__(self, Mu:tuple[int], relerr:float=1e-10):
+    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
         """
         MPS algorithm for characters of the symmetric group S_n described in arX
 
@@ -69,8 +69,7 @@ class CharacterBuilder:
         self.cacheC2 = {}
         self.cacheR = {}
 
-   
-    def get_character(self, Lambda:tuple[int]) -> int:
+    def get_character(self, Lambda: tuple[int]) -> int:
         """
         Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
         Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
@@ -127,8 +126,7 @@ class CharacterBuilder:
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
 
-
-    def getMPO(self, k:int) -> mp.MPArray:
+    def getMPO(self, k: int) -> mp.MPArray:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
 
@@ -190,7 +188,7 @@ class CharacterBuilder:
             self.maximum_rank = max(self.maximum_rank, np.max(self.mps.ranks))
 
     def get_bond_dimension(self) -> int:
-        """ 
+        """
         Returns the maximum bond dimension (maximum Schmidt rank) of the MPS.
         """
         return self.maximum_rank

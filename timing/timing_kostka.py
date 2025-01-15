@@ -1,12 +1,12 @@
 import time
 from sage.all import *
-from kostka_builder import KostkaBuilder, partitions
+from kostka_builder import KostkaBuilder
+from utils import partitions
 import random as rm
 import numpy as np
 import json
 
 # Code to time and compare the mps Kostka algorithm to symmetrica
-
 path = './DATA/kostka_' # path prefix
 
 start = 10
