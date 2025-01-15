@@ -5,7 +5,6 @@ import pickle
 from character_builder import get_partitions
 
 
-
 result = []
 
 # partitions for the timing test

@@ -161,10 +161,3 @@ class SkewKostkaBuilder:
         self.MPSready = True
 
 
-# generates all partitions of n 
-# source: https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
-def partitions(n, I=1):
-    yield (n,)
-    for i in range(I, n//2 + 1):
-        for p in partitions(n-i, i):
-            yield (i,) + p

@@ -8,4 +8,4 @@ Implementation of the MPS algorithm based on [mpnum library](https://mpnum.readt
 This version is optimized for speed.
 
 Implementation of the MPS algorithm based on [quimb library](https://quimb.readthedocs.io/en/latest/) can be found in **character_builder_quimb.py**\
-This version is unoptimized.
+This version is not optimized.
