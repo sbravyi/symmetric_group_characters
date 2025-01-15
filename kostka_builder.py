@@ -25,6 +25,7 @@ class KostkaBuilder:
     # Determines if lambda >= Mu in majorization order
     # Input:
     # Lambda: a list of non-increasing positive integers summing to n
+    @cache
     def majorize(self, Lambda):
         sum_mu = 0
         sum_lm = 0

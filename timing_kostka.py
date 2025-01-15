@@ -3,7 +3,7 @@ import time
 import pickle
 from character_builder import get_partitions
 from kostka_builder import KostkaBuilder
-from sage.all import * 
+from sage.all import symmetrica
 
 n = 15
 
