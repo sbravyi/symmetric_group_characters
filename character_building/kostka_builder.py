@@ -27,7 +27,9 @@ class KostkaBuilder(Builder):
         self.tensor1[0, 1, 0] = 1  # basis state |1>
         self.tensor0 = np.zeros((1, 2, 1))
         self.tensor0[0, 0, 0] = 1  # basis state |0>
-        self.get_MPS()
+
+        self.mps = self.get_MPS()
+        self.MPSready = True
 
         # divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
@@ -155,15 +157,17 @@ class KostkaBuilder(Builder):
 
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
-    def get_MPS(self):
+    def get_MPS(self) -> mp.MPArray:
         """
         Updates the MPS representation of the initial state |1^n 0^n> and applies the sequence of the h_k's using MPO-MPS multiplication.
         """
         array = self.n * [self.tensor1] + self.n * [self.tensor0]
-        self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
+        mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the h_k's using MPO-MPS multiplication
         for k in self.Mu:
             mpo = self.get_MPO(k)
-            self.mps = mp.dot(mpo, self.mps)
-            self.mps.compress(method='svd', relerr=self.relerr)
-        self.MPSready = True
+            mps = mp.dot(mpo, self.mps)
+            mps.compress(method='svd', relerr=self.relerr)
+
+        return mps
+        

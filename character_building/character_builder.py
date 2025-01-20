@@ -169,21 +169,23 @@ class CharacterBuilder(Builder):
         array.append(tensor)
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
-    def get_MPS(self):
+    def get_MPS(self) -> mp.MPArray:
         """
         Computes the MPS representation of the characters of the symmetric group S_n.
         """
         # MPS representation of the initial state |1^n 0^n>
         array = self.n * [self.tensor1] + self.n * [self.tensor0]
-        self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
+        mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the current operators using MPO-MPS
         # multiplication
         self.maximum_rank = 1
         for k in self.Mu:
             mpo = self.get_MPO(k)
-            self.mps = mp.dot(mpo, self.mps)
-            self.mps.compress(method='svd', relerr=self.relerr)
-            self.maximum_rank = max(self.maximum_rank, np.max(self.mps.ranks))
+            mps = mp.dot(mpo, mps)
+            mps.compress(method='svd', relerr=self.relerr)
+            self.maximum_rank = max(self.maximum_rank, np.max(mps.ranks))
+
+        return mps
 
     def get_bond_dimension(self) -> int:
         """

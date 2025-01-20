@@ -1,0 +1,37 @@
+plotting package
+================
+
+Submodules
+----------
+
+plotting.make\_plot module
+--------------------------
+
+.. automodule:: plotting.make_plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plotting.make\_plot\_dim module
+-------------------------------
+
+.. automodule:: plotting.make_plot_dim
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plotting.make\_plot\_kostka module
+----------------------------------
+
+.. automodule:: plotting.make_plot_kostka
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:

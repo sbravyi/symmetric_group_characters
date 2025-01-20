@@ -1,0 +1,37 @@
+timing package
+==============
+
+Submodules
+----------
+
+timing.timing\_kostka module
+----------------------------
+
+.. automodule:: timing.timing_kostka
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+timing.timing\_mps module
+-------------------------
+
+.. automodule:: timing.timing_mps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+timing.timing\_sage module
+--------------------------
+
+.. automodule:: timing.timing_sage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: timing
+   :members:
+   :undoc-members:
+   :show-inheritance:
