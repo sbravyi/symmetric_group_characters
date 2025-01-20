@@ -5,10 +5,15 @@ from utils import get_partitions
 import random as rm
 import numpy as np
 import json
+from pathlib import Path
 
 # Code to time and compare the mps Kostka algorithm to symmetrica
 
-path = './DATA/kostka__short_' # path prefix
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+
+path = DATA_DIR  # data directory
+file_prefix = 'kostka__short_' # file prefix
 
 start = 10
 stop =  40# non inclusive
@@ -33,7 +38,7 @@ def trial_sage(Mu, Pn):
         
 # collects data for size n
 def run(n):
-    f_name = path+str(n)+'_'+str(relerr)+'.dat'
+    f_name = path / (file_prefix+str(n)+'_'+str(relerr)+'.dat')
     with open(f_name, "a") as f:
         # create all partitions of n
         Pn = get_partitions(n)
