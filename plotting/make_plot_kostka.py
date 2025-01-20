@@ -7,7 +7,7 @@ start = 10
 stop = 40
 step = 4
 relerr = 1e-12
-path = '../DATA/kostka__short_' # change for different datasets
+path = './DATA/kostka__short_' # change for different datasets
 
 # plot run times of MPS vs kostka
 xarr = []
@@ -40,7 +40,8 @@ for n in range(start, stop, step):
 
 time_data = pd.DataFrame(time_data)
 
-fig,ax = plt.subplots()
+fig,ax = plt.subplots(figsize=(10, 8))
+
 g = sns.boxplot(data=time_data, x='n', y='Runtime', hue='Algorithm', 
                 log_scale=True, linewidth=0.8, widths=0.35, 
                 showfliers=False, ax=ax)
@@ -49,4 +50,4 @@ handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles=handles[0:], labels=labels[0:])
 plt.legend(ncol=len(time_data.columns))
 plt.ylabel('Runtime (seconds)')
-plt.savefig("../FIGS/kostka_"+str(relerr)+".pdf")
+plt.savefig("./FIGS/kostka_"+str(relerr)+".pdf")

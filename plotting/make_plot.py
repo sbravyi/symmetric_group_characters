@@ -91,4 +91,4 @@ plt.yscale('log')
 ax.set_xlabel('n')
 ax.grid(True)
 plt.show()
-
+plt.savefig("./FIGS/char_dim.pdf")

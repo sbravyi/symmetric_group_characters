@@ -28,9 +28,8 @@ x = np.arange(num_trials)  # the label locations
 width = 0.25  # the width of the bars
 multiplier = 0
 
-
-plt.rcParams['font.size'] = '20'
 plt.figure(figsize=(10, 8))
+plt.rcParams['font.size'] = '20'
 ax = plt.gca()
 
 
@@ -49,5 +48,8 @@ ax.legend(loc='upper left', ncols=3)
 plt.yscale('log')
 ax.set_xlabel('n')
 ax.grid(True)
+
+
 plt.show()
+plt.savefig("./FIGS/char_dim.pdf")
 
