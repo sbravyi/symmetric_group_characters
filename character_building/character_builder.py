@@ -1,30 +1,49 @@
 import numpy as np
-import mpnum as mp  # MPS/MPO package
-from utils import majorize
+
+# NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations!
+# The following fixes dependency issues for numpy 2.0
+if np.version.version > '2.0':
+    np.float_ = np.float64
+    np.complex_ = np.complex128
+
+# The following fixes dependency issues for python >= 3.7
+import sys
+import collections
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+    collections.Sequence = collections.abc.Sequence
+    collections.Iterable = collections.abc.Iterable
+    collections.Iterator = collections.abc.Iterator
+
+import mpnum as mp  # MPS/MPO simulation package
+
+from character_building.builder import Builder
 
 
-class KostkaBuilder:
+class CharacterBuilder(Builder):
 
     def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
         """
-        MPS algorithm for Kostka numbers of the symmetric group S_n described in arX
+        MPS algorithm for characters of the symmetric group S_n described in arX
 
-        Takes as input a partition Mu of n specified as a list of
-        positive integers in nonincreasing order that sum to n.
-
-        Cache partial products of MPS matrices over each interval.
+        Takes as input a conjugacy class Mu of S_n specified as a list of
+        positive integers that sum to n
 
         Args:
-            Mu (tuple[int]): S_n partition as a list of positive integers in nonincreasing order that sum up to n.
-            relerr (float, optional): MPS compression error. Defaults to 1e-10.
+            Mu (tuple[int]): S_n conjugacy class as a list of positive integers that sum up to n.
+            relerr (float, optional): MPS compression relative error. Defaults to 1e-10.
         """
-        self.Mu = Mu
-        self.n = np.sum(self.Mu)
-        self.relerr = relerr  # relative error for MPS compression
+
+        super().__init__(Mu, relerr)
+        
+        # maximum MPS bond dimension (maximum Schmidt rank)
+        self.maximum_rank = 1
+
         self.tensor1 = np.zeros((1, 2, 1))
         self.tensor1[0, 1, 0] = 1  # basis state |1>
         self.tensor0 = np.zeros((1, 2, 1))
         self.tensor0[0, 0, 0] = 1  # basis state |0>
+
+        # compute the MPS that encodes all characters of Mu
         self.get_MPS()
 
         # divide the spin chain into four intervals: left (L), center left
@@ -48,24 +67,21 @@ class KostkaBuilder:
         self.cacheC2 = {}
         self.cacheR = {}
 
-    def get_kostka(self, Lambda: tuple[int], maj: bool = True) -> int:
+    def get_character(self, Lambda: tuple[int]) -> int:
         """
-        Computes the Kostka K_lambda,Mu for a partition Lambda
+        Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
+        Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
+
+        Cache the partial products of MPS matrices over each interval to speed up the computation.
 
         Args:
-            Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
-            maj (bool, optional): Check if Lambda majorizes Lambda for early termination. Defaults to True.
+            Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.
 
         Returns:
-            int: _description_
+            int: character chi_Lambda(Mu)
         """
-
         assert (len(Lambda) <= self.n)
-        # check majorization condition before computing amplitudes
-        if maj:
-            if not majorize(self.Mu, Lambda):
-                return 0
-
+        # pad the partition Lambda with zeros to make n parts
         padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
         if self.n < 8:
             # don't use caching for small n's
@@ -79,7 +95,6 @@ class KostkaBuilder:
         bitstring = np.zeros(2 * self.n, dtype=int)
         supp = [padded_Lambda[i] + self.n - i - 1 for i in range(self.n)]
         bitstring[supp] = 1
-
         # project bitstring onto each caching register
         xL = bitstring[self.L]
         xC1 = bitstring[self.C1]
@@ -109,7 +124,7 @@ class KostkaBuilder:
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
 
-    def getMPO(self, k: int) -> mp.MPArray:
+    def get_MPO(self, k: int) -> mp.MPArray:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
 
@@ -117,51 +132,61 @@ class KostkaBuilder:
             k (int): parameter specifying the current operator J_k.
 
         Returns:
-            mp.MPArray: MPO representation of the current operator J_k.
+            mpnum.MPArray: MPO representation of the current operator J_k.
         """
 
         array = []
 
-        # index ordering LUDR
-
         # left boundary
-        tensor = np.zeros((1, 2, 2, 2 * k + 1))
+        tensor = np.zeros((1, 2, 2, k + 2))
         tensor[0, :, :, 0] = np.eye(2)
-        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])  # annihilate
+        # flip qubit from '1' to '0'
+        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])
         array.append(tensor)
 
         # bulk
-        tensor = np.zeros((2 * k + 1, 2, 2, 2 * k + 1))
-        for i in range(k - 1):
-            tensor[2 * i, :, :, 2 * i] = np.eye(2)
-            tensor[2 * i + 1, :, :, 2 * i + 2] = np.array([[0, 0], [1, 0]])
-            tensor[2 * i + 1, :, :, 2 * i + 3] = np.array([[1, 0], [0, 0]])
-            tensor[2 * i, :, :, 2 * i + 1] = np.array([[0, 1], [0, 0]])
+        # index ordering Left Right Up Down
+        tensor = np.zeros((k + 2, 2, 2, k + 2))
 
-        tensor[2 * k - 2, :, :, 2 * k - 2] = np.eye(2)
-        tensor[2 * k - 2, :, :, 2 * k - 1] = np.array([[0, 1], [0, 0]])
-        tensor[2 * k - 1, :, :, 2 * k] = np.array([[0, 0], [1, 0]])
-        tensor[2 * k, :, :, 2 * k] = np.eye(2)
+        tensor[0, :, :, 0] = np.eye(2)
+        tensor[k + 1, :, :, k + 1] = np.eye(2)
+        # flip qubit from '1' to '0'
+        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])
+        # flip qubit from '0' to '1'
+        tensor[k, :, :, k + 1] = np.array([[0, 0], [1, 0]])
+
+        # Pauli Z
+        for j in range(1, k):
+            tensor[j, :, :, j + 1] = np.array([[1, 0], [0, -1]])
 
         array = array + (2 * self.n - 2) * [tensor]
 
         # right boundary
-        tensor = np.zeros((2 * k + 1, 2, 2, 1))
-        tensor[2 * k, :, :, 0] = np.eye(2)
-        tensor[2 * k - 1, :, :, 0] = np.array([[0, 0], [1, 0]])  # create
+        tensor = np.zeros((k + 2, 2, 2, 1))
+        tensor[k + 1, :, :, 0] = np.eye(2)
+        # flip qubit from '0' to '1'
+        tensor[k, :, :, 0] = np.array([[0, 0], [1, 0]])
         array.append(tensor)
-
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
     def get_MPS(self):
         """
-        Updates the MPS representation of the initial state |1^n 0^n> and applies the sequence of the h_k's using MPO-MPS multiplication.
+        Computes the MPS representation of the characters of the symmetric group S_n.
         """
+        # MPS representation of the initial state |1^n 0^n>
         array = self.n * [self.tensor1] + self.n * [self.tensor0]
         self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
-        # apply a sequence of the h_k's using MPO-MPS multiplication
+        # apply a sequence of the current operators using MPO-MPS
+        # multiplication
+        self.maximum_rank = 1
         for k in self.Mu:
-            mpo = self.getMPO(k)
+            mpo = self.get_MPO(k)
             self.mps = mp.dot(mpo, self.mps)
             self.mps.compress(method='svd', relerr=self.relerr)
-        self.MPSready = True
+            self.maximum_rank = max(self.maximum_rank, np.max(self.mps.ranks))
+
+    def get_bond_dimension(self) -> int:
+        """
+        Returns the maximum bond dimension (maximum Schmidt rank) of the MPS.
+        """
+        return self.maximum_rank

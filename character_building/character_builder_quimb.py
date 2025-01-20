@@ -1,9 +1,10 @@
 import numpy as np
 import quimb.tensor as qtn
 from quimb.tensor.tensor_1d_compress import mps_gate_with_mpo_direct
+from character_building.builder import Builder
 
 
-class CharacterBuilder:
+class CharacterBuilder(Builder):
     """
     MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.?????
     """
@@ -15,14 +16,15 @@ class CharacterBuilder:
         Args:
             Mu (tuple[int]):
         """
-        self.Mu = list(np.sort(Mu))
-        self.n = np.sum(self.Mu)
-        self.relerr = relerr  # relative error for MPS compression
-        self.qubits = [i for i in range(2 * self.n)]
+        super().__init__(Mu, relerr)
+
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
         # compute the MPS that encodes all characters of Mu
         self.get_MPS()
+
+
+        self.qubits = [i for i in range(2 * self.n)]
         # local tensors
         self.lt = []
         # left boundary
@@ -109,7 +111,7 @@ class CharacterBuilder:
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
 
-    def getMPO(self, k) -> qtn.tensor_1d.MatrixProductOperator:
+    def get_MPO(self, k) -> qtn.tensor_1d.MatrixProductOperator:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag
 
@@ -180,7 +182,7 @@ class CharacterBuilder:
             array, shape='lrp', tags=self.qubits, site_ind_id='k{}', site_tag_id='I{}')
 
         for k in self.Mu:
-            mpo = self.getMPO(k)
+            mpo = self.get_MPO(k)
             mps_gate_with_mpo_direct(
                 self.mps,
                 mpo,

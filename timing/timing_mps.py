@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import pickle
-from character_builder import CharacterBuilder
+from character_building.character_builder import CharacterBuilder
 from utils import get_partitions
 
 

@@ -3,8 +3,10 @@ import mpnum as mp  # MPS/MPO package
 
 from utils import majorize
 
+from character_building.builder import Builder  
 
-class SkewKostkaBuilder:
+
+class SkewKostkaBuilder(Builder):
     def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0, ), relerr=1e-14):
         """
         MPS algorithm for skew Kostka numbers.
@@ -16,14 +18,15 @@ class SkewKostkaBuilder:
             Nu (tuple[int], optional): _description_. Defaults to (0, ).
             relerr (_type_, optional): _description_. Defaults to 1e-14.
         """
-        self.Mu = Mu
-        self.n = np.sum(self.Mu)
+
+        super().__init__(Mu, relerr)
+        
         # m is the size of partitions such that Lambda \ Nu is valid
         self.m = self.n + np.sum(Nu)
         assert (len(Nu) <= self.n)
         assert (sum(Nu) <= self.n)
         self.Nu = Nu + [0] * (self.m - len(Nu))  # Pad Nu with 0s
-        self.relerr = relerr  # relative error for MPS compression
+    
         self.tensor1 = np.zeros((1, 2, 1))
         self.tensor1[0, 1, 0] = 1  # basis state |1>
         self.tensor0 = np.zeros((1, 2, 1))
@@ -108,7 +111,7 @@ class SkewKostkaBuilder:
         return chi[0][0]
 
     # Returns a MPO representing (operator) complete symmetric polynomials
-    def getMPO(self, k):
+    def get_MPO(self, k):
 
         array = []
 
@@ -157,7 +160,7 @@ class SkewKostkaBuilder:
         self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the h_k's using MPO-MPS multiplication
         for k in self.Mu:
-            mpo = self.getMPO(k)
+            mpo = self.get_MPO(k)
             self.mps = mp.dot(mpo, self.mps)
             self.mps.compress(method='svd', relerr=self.relerr)
         self.MPSready = True
