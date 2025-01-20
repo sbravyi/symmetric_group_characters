@@ -1,41 +1,52 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import json
 import seaborn as sns
+import json
+import pandas as pd
 
 start = 10
-stop = 36
+stop = 40
 step = 4
 relerr = 1e-12
-path = './DATA/'
+path = '../DATA/kostka__short_' # change for different datasets
 
 # plot run times of MPS vs kostka
 xarr = []
 yarr_mps = []
 yarr_sage = []
 
-# loop through files
+time_data = {
+        'n' : [],
+        'Algorithm': [],
+        'Runtime': []
+        }
+
+# loop through files and convert to dataframe
 for n in range(start, stop, step):
-    f_name = path+'kostka_'+str(n)+'_'+str(relerr)+'.dat'
+    f_name = path+str(n)+'_'+str(relerr)+'.dat'
     with open(f_name, "r") as f:
         for line in f:
             run_data = json.loads(line.strip()) # data from an individual run
             n = sum(run_data[0])
-            xarr.append(n)
-            yarr_mps.append(run_data[1])
-            yarr_sage.append(run_data[2])
             
-
-#sns.barplot(x=[xv - 0 for xv in xarr], y=np.log(yarr_mps), capsize=.1, errorbar="sd")
-#sns.stripplot(x=[xv - 0 for xv in xarr], y=np.log(yarr_mps), color="0.3", alpha=.35)
-#plt.xlabel("n")
-#plt.ylabel("Time (s)")
-
-#sns.barplot(x=[xv + 1 for xv in xarr], y=np.log(yarr_sage), capsize=.1, errorbar="sd", color="red")
-#sns.stripplot(x=[xv + 1 for xv in xarr], y=np.log(yarr_sage), color="0", alpha=.35)
+            # MPS data
+            time_data['n'].append(n)
+            time_data['Algorithm'].append('MPS')
+            time_data['Runtime'].append(run_data[1])
             
-plt.figure(figsize=(10, 8))
-sns.boxplot(x=[xv - 0 for xv in xarr], y=np.log(yarr_mps), color="0.3", width=0.4)
-sns.boxplot(x=[xv + 1 for xv in xarr], y=np.log(yarr_sage), color="red", width=0.4)
-plt.xlabel("n")
-plt.ylabel("Time (s)")  
+            # Sage data
+            time_data['n'].append(n)
+            time_data['Algorithm'].append('SAGE')
+            time_data['Runtime'].append(run_data[2])
+
+time_data = pd.DataFrame(time_data)
+
+fig,ax = plt.subplots()
+g = sns.boxplot(data=time_data, x='n', y='Runtime', hue='Algorithm', 
+                log_scale=True, linewidth=0.8, widths=0.35, 
+                showfliers=False, ax=ax)
+plt.grid()
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles=handles[0:], labels=labels[0:])
+plt.legend(ncol=len(time_data.columns))
+plt.ylabel('Runtime (seconds)')
+plt.savefig("../FIGS/kostka_"+str(relerr)+".pdf")

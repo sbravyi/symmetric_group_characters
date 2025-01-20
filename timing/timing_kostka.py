@@ -1,62 +1,66 @@
 import time
 from sage.all import *
 from character_building.kostka_builder import KostkaBuilder
-from utils import partitions
+from utils import get_partitions
 import random as rm
 import numpy as np
 import json
 
 # Code to time and compare the mps Kostka algorithm to symmetrica
-path = './DATA/kostka_' # path prefix
+
+path = './DATA/kostka__short_' # path prefix
 
 start = 10
-stop =  35 
+stop =  40# non inclusive
 step = 4
 relerr = 1e-12
 its = 100 # number of iterations per size
 
+def trial_mps(Mu, Pn):
+    table_mps = {}
+    t = time.time()
+    builder = KostkaBuilder(Mu, relerr)
+    for Lambda in Pn:
+        table_mps[Lambda] = builder.get_kostka(Lambda)
+    return time.time() - t, table_mps
+
+def trial_sage(Mu, Pn):
+    table_sage = {}
+    t = time.time()
+    for Lambda in Pn:
+        table_sage[Lambda] = symmetrica.kostka_number(Lambda, Mu)
+    return time.time()-t, table_sage
+        
 # collects data for size n
 def run(n):
     f_name = path+str(n)+'_'+str(relerr)+'.dat'
     with open(f_name, "a") as f:
         # create all partitions of n
-        Pn = [list(p) for p in partitions(n)]
-        for p in Pn:
-            p.reverse()
-        Pn = [tuple(p) for p in Pn]
+        Pn = get_partitions(n)
         
         # run time trials
-        for _ in range(its):
+        for i in range(its):
             Mu = rm.choice(Pn) # random Mu
-            table_mps = {}
-            table_sage = {}
+            while len(Mu) > int(n/3): # require Mu to be "short"
+                Mu = rm.choice(Pn)
             
-            # run MPS algorithm
-            t = time.time()
-            builder = KostkaBuilder(Mu, relerr)
-            for Lambda in Pn:
-                table_mps[Lambda] = builder.get_kostka(Lambda)
-            elapsed_mps = time.time() - t
-            
-            # call SAGE
-            t = time.time()
-            for Lambda in Pn:
-                table_sage[Lambda] = symmetrica.kostka_number(Lambda, Mu)
-            elapsed_sage = time.time()-t
+            elapsed_mps, table_mps = trial_mps(Mu, Pn)
+            elapsed_sage, table_sage = trial_sage(Mu, Pn)
             
             # check for errors
             max_error = 0
             num_error = 0
-            for Lambda in Pn:
-                tmp = np.abs(table_mps[Lambda] - table_sage[Lambda])
-                if tmp > max_error:
-                    max_error = tmp
-                if tmp >= 0.5:
-                    num_error += 1
+            if table_mps and table_sage:
+                for Lambda in Pn:
+                    tmp = np.abs(table_mps[Lambda] - table_sage[Lambda])
+                    if tmp > max_error:
+                        max_error = tmp
+                        if tmp >= 0.5:
+                            num_error += 1
             
             # write to file
             json.dump([Mu, elapsed_mps, elapsed_sage, max_error, num_error], f)
             f.write('\n')
 
 for n in range(start, stop, step):
-    run(n)
+   run(n)
