@@ -14,7 +14,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="character_building" href="modules.html" />
+    <link rel="prev" title="Character Builder documentation" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -34,8 +34,7 @@
             
   <section id="character-building-package">
 <h1>character_building package<a class="headerlink" href="#character-building-package" title="Link to this heading">¶</a></h1>
-<p>This is package builds character using Matrix Product State (MPS) algorithm for computing characters of irreducible representations of the symmetric group $S_n$.
-It also computes Kostka numbers.</p>
+<p>This builds character using Matrix Product States (MPS). This is useful for computing characters of the symmetric group $S_n$ and Kostka numbers.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
@@ -47,16 +46,37 @@ It also computes Kostka numbers.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Abstract class to define the structure of the builders for the
 Kostka numbers and characters of the symmetric group S_n.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Mu</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – S_n conjugacy class as a list of positive integers that sum up to n.</p></li>
+<li><p><strong>relerr</strong> (<em>float</em><em>, </em><em>optional</em>) – MPS compression relative error. Defaults to 1e-10.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.builder.Builder.get_MPO">
-<span class="sig-name descname"><span class="pre">get_MPO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MatrixProductOperator</span></span></span><a class="headerlink" href="#character_building.builder.Builder.get_MPO" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the MPO that encodes all characters of Mu.</p>
+<span class="sig-name descname"><span class="pre">get_MPO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MatrixProductOperator</span></span></span><a class="headerlink" href="#character_building.builder.Builder.get_MPO" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the MPO that encodes the current operator from Crichigno and Prakash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – distance between the two fermionic sites.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.builder.Builder.get_MPS">
 <span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MatrixProductState</span></span></span><a class="headerlink" href="#character_building.builder.Builder.get_MPS" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the MPS that encodes all characters of Mu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MPS that encodes all characters of Mu.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>mp.MPArray | qtn.tensor_1d.MatrixProductState</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -87,7 +107,7 @@ Kostka numbers and characters of the symmetric group S_n.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.character_builder.CharacterBuilder.get_MPS">
-<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#character_building.character_builder.CharacterBuilder.get_MPS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span></span></span><a class="headerlink" href="#character_building.character_builder.CharacterBuilder.get_MPS" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the MPS representation of the characters of the symmetric group S_n.</p>
 </dd></dl>
 
@@ -147,6 +167,14 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 <dt class="sig sig-object py" id="character_building.character_builder_quimb.CharacterBuilder.get_MPS">
 <span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#character_building.character_builder_quimb.CharacterBuilder.get_MPS" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the MPS that encodes all characters of Mu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MPS that encodes all characters of Mu.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>mp.MPArray | qtn.tensor_1d.MatrixProductState</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -208,7 +236,7 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.kostka_builder.KostkaBuilder.get_MPS">
-<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#character_building.kostka_builder.KostkaBuilder.get_MPS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span></span></span><a class="headerlink" href="#character_building.kostka_builder.KostkaBuilder.get_MPS" title="Link to this definition">¶</a></dt>
 <dd><p>Updates the MPS representation of the initial state <a href="#id1"><span class="problematic" id="id2">|</span></a>1^n 0^n&gt; and applies the sequence of the h_k’s using MPO-MPS multiplication.</p>
 </dd></dl>
 
@@ -244,13 +272,26 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.skew_kostka_builder.SkewKostkaBuilder.get_MPO">
 <span class="sig-name descname"><span class="pre">get_MPO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#character_building.skew_kostka_builder.SkewKostkaBuilder.get_MPO" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the MPO that encodes all characters of Mu.</p>
+<dd><p>Compute the MPO that encodes the current operator from Crichigno and Prakash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – distance between the two fermionic sites.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="character_building.skew_kostka_builder.SkewKostkaBuilder.get_MPS">
-<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#character_building.skew_kostka_builder.SkewKostkaBuilder.get_MPS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_MPS</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MPArray</span></span></span><a class="headerlink" href="#character_building.skew_kostka_builder.SkewKostkaBuilder.get_MPS" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the MPS that encodes all characters of Mu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MPS that encodes all characters of Mu.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>mp.MPArray | qtn.tensor_1d.MatrixProductState</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -300,8 +341,14 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">character_building</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">character_building package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">character_building package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building.builder">character_building.builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building.character_builder">character_building.character_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building.character_builder_quimb">character_building.character_builder_quimb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building.kostka_builder">character_building.kostka_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building.skew_kostka_builder">character_building.skew_kostka_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-character_building">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -310,9 +357,7 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">character_building</a><ul>
-      <li>Previous: <a href="modules.html" title="previous chapter">character_building</a></li>
-  </ul></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Character Builder documentation</a></li>
   </ul></li>
 </ul>
 </div>

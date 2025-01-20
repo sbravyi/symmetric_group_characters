@@ -44,7 +44,7 @@ class CharacterBuilder(Builder):
         self.tensor0[0, 0, 0] = 1  # basis state |0>
 
         # compute the MPS that encodes all characters of Mu
-        self.get_MPS()
+        self.mps = self.get_MPS()
 
         # divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)

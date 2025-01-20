@@ -1,8 +1,8 @@
 character\_building package
 ===========================
 
-This is package builds character using Matrix Product State (MPS) algorithm for computing characters of irreducible representations of the symmetric group $S_n$. 
-It also computes Kostka numbers.
+This builds character using Matrix Product States (MPS). This is useful for computing characters of the symmetric group $S_n$ and Kostka numbers. 
+
 
 
 
