@@ -1,10 +1,16 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+FIG_DIR = SCRIPT_DIR.parent / 'FIGS'
+
 
 file_name = 'mps_data.dat'
 
-with open('./DATA/'+file_name, 'rb') as fp:
+with open(DATA_DIR/file_name, 'rb') as fp:
 	result_mps = pickle.load(fp)
 
 num_trials = len(result_mps)
@@ -51,5 +57,5 @@ ax.grid(True)
 
 
 plt.show()
-plt.savefig("./FIGS/char_dim.pdf")
+plt.savefig(FIG_DIR/"char_dim.pdf")
 
