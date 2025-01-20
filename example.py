@@ -1,9 +1,9 @@
 import numpy as np
 import random
-from character_builder import CharacterBuilder, get_partitions
+from character_building.character_builder import CharacterBuilder
+from utils import get_partitions
 
 # compute characters of the symmetric group S_n using the MPS algorithm
-
 n = 8
 
 Pn = get_partitions(n)

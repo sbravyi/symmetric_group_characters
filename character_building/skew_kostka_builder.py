@@ -114,7 +114,6 @@ class SkewKostkaBuilder(Builder):
     def get_MPO(self, k):
 
         array = []
-
         # index ordering LUDR
 
         # left boundary
