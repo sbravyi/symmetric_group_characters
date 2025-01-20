@@ -50,14 +50,14 @@ def perm_module_d(Mu:tuple[int]) -> int:
         val -= lgamma(part+1)
     return int(round(exp(val)))  
 
-
-def majorize(Mu: tuple[int], Lambda: tuple[int]) -> bool:
+def majorize(Mu: tuple[int], Lambda: tuple[int], Eq = True) -> bool:
     """
     Determines if lambda >= Mu in majorization order
 
     Args:
-        Mu (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
-        Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
+        Mu (tuple[int]): Partition as a list of positive integers in nonincreasing order.
+        Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order.
+        Eq: Flag for requiring that Mu and Lambda are partitions of the same number
 
     Returns:
         bool: True if Lambda >= Mu in majorization order, False otherwise.
@@ -70,7 +70,8 @@ def majorize(Mu: tuple[int], Lambda: tuple[int]) -> bool:
         sum_lm += Lambda[i]
         if sum_mu > sum_lm:
             return False
-    if np.sum(Mu) == np.sum(Lambda):
+    
+    if Eq and sum_mu + sum(Mu[i:]) == sum_lm + sum(Lambda[i:]) or not Eq:
         return True
     else:
         return False
