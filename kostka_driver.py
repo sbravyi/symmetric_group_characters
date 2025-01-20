@@ -4,45 +4,17 @@ from kostka_builder import KostkaBuilder, partitions
 import random as rm
 import numpy as np
 import json
-import multiprocessing
-import signal
-import functools
 
 # Code to time and compare the mps Kostka algorithm to symmetrica
 
 path = './DATA/kostka__short_' # path prefix
 
-start = 38
+start = 10
 stop =  40# non inclusive
 step = 4
 relerr = 1e-12
-its = 30 # number of iterations per size
-#max_time = 1 # seconds to timeout after
+its = 100 # number of iterations per size
 
-def timeout(seconds=5, default=None):
-
-    def decorator(func):
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-
-            def handle_timeout(signum, frame):
-                return default
-
-            signal.signal(signal.SIGALRM, handle_timeout)
-            signal.alarm(seconds)
-
-            result = func(*args, **kwargs)
-
-            signal.alarm(0)
-
-            return result
-
-        return wrapper
-
-    return decorator
-
-#@timeout(seconds=max_time, default = (-1, {}))
 def trial_mps(Mu, Pn):
     table_mps = {}
     t = time.time()
@@ -51,7 +23,6 @@ def trial_mps(Mu, Pn):
         table_mps[Lambda] = builder.get_kostka(Lambda)
     return time.time() - t, table_mps
 
-#@timeout(seconds=max_time, default = (-1, {}))    
 def trial_sage(Mu, Pn):
     table_sage = {}
     t = time.time()
@@ -59,7 +30,6 @@ def trial_sage(Mu, Pn):
         table_sage[Lambda] = symmetrica.kostka_number(Lambda, Mu)
     return time.time()-t, table_sage
         
-
 # collects data for size n
 def run(n):
     f_name = path+str(n)+'_'+str(relerr)+'.dat'
