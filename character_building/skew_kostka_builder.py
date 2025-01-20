@@ -7,24 +7,23 @@ from character_building.builder import Builder
 
 
 class SkewKostkaBuilder(Builder):
+    """
+    MPS algorithm for skew Kostka numbers.
+
+    Computes Kostkas for a given weight vector Mu and skew Nu.
+
+    Args:
+        Mu (tuple[int]): we assume that Mu is given in non-increasing order
+        Nu (tuple[int], optional): _description_. Defaults to (0, ).
+        relerr (_type_, optional): _description_. Defaults to 1e-14.
+    """
+
     def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0, ), relerr=1e-14):
-        """
-        MPS algorithm for skew Kostka numbers.
-
-        Computes Kostkas for a given weight vector Mu and skew Nu.
-
-        Args:
-            Mu (tuple[int]): we assume that Mu is given in non-increasing order
-            Nu (tuple[int], optional): _description_. Defaults to (0, ).
-            relerr (_type_, optional): _description_. Defaults to 1e-14.
-        """
-
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, Nu, relerr)
         
-        # m is the size of partitions such that Lambda \ Nu is valid
-        self.m = self.n + np.sum(Nu)
         assert (len(Nu) <= self.n)
         assert (sum(Nu) <= self.n)
+
         self.Nu = Nu + [0] * (self.m - len(Nu))  # Pad Nu with 0s
     
         self.tensor1 = np.zeros((1, 2, 1))

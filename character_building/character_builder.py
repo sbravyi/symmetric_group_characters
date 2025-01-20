@@ -15,15 +15,13 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
-
 from character_building.builder import Builder
-
 
 class CharacterBuilder(Builder):
 
     def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
         """
-        MPS algorithm for characters of the symmetric group S_n described in arX
+        MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.????
 
         Takes as input a conjugacy class Mu of S_n specified as a list of
         positive integers that sum to n
@@ -33,7 +31,7 @@ class CharacterBuilder(Builder):
             relerr (float, optional): MPS compression relative error. Defaults to 1e-10.
         """
 
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, relerr=relerr)
         
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
@@ -46,7 +44,8 @@ class CharacterBuilder(Builder):
         # compute the MPS that encodes all characters of Mu
         self.mps = self.get_MPS()
 
-        # divide the spin chain into four intervals: left (L), center left
+        # Caching registers for partial products of MPS matrices. 
+        # Divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
         self.n1 = int(np.round(self.n / 2))
         self.n2 = self.n
@@ -72,7 +71,7 @@ class CharacterBuilder(Builder):
         Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
         Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
 
-        Cache the partial products of MPS matrices over each interval to speed up the computation.
+        Caches the partial products of MPS matrices over each interval to speed up the computation.
 
         Args:
             Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.

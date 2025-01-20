@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Character Builder documentation &#8212; Character Builder 0.42 documentation</title>
+    <title>Classical algorithms for characters of the symmetric group &#8212; Sn characters with tensor networks 0.42 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
@@ -32,16 +32,16 @@
 
           <div class="body" role="main">
             
-  <section id="character-builder-documentation">
-<h1>Character Builder documentation<a class="headerlink" href="#character-builder-documentation" title="Link to this heading">¶</a></h1>
-<p>This is a Matrix Product State (MPS) algorithm for computing characters of irreducible representations of the symmetric group $S_n$ and Kostka numbers.
-The algorithm computes an MPS encoding all characters of a given conjugacy class of $S_n$. It relies on a mapping from characters of $S_n$ to quantum spin chains  proposed by
+  <section id="classical-algorithms-for-characters-of-the-symmetric-group">
+<h1>Classical algorithms for characters of the symmetric group<a class="headerlink" href="#classical-algorithms-for-characters-of-the-symmetric-group" title="Link to this heading">¶</a></h1>
+<p>This is a companion package to the paper “Classical and quantum algorithms for  characters of the symmetric group” by Sergey Bravyi, David Gosset, Vojtech Havlicek an Louis Schatzki.
+It contains the implementation of the classical algorithms for computing characters of the symmetric group Sn and Kostka numbers based on a tensor network contraction of Matrix Product States (MPS).</p>
+<p>The algorithm computes an MPS encoding all characters of a given conjugacy class of Sn. It relies on a mapping from characters of Sn to quantum spin chains  proposed by
 <a class="reference external" href="https://arxiv.org/abs/2404.04322">Marcos Crichigno and Anupam Prakash</a>.</p>
 <p>Example of how to use the algorithm can be found in <strong>example.py</strong></p>
-<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://mpnum.readthedocs.io/en/latest/">mpnum library</a> can be found in <strong>character_builder.py</strong>.
+<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://mpnum.readthedocs.io/en/latest/">mpnum library</a> can be found in <strong>character_building/character_builder.py</strong>.
 This version is optimized for speed.</p>
-<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://quimb.readthedocs.io/en/latest/">quimb library</a> can be found in <strong>character_builder_quimb.py</strong>.
-There are some optimization of this version.</p>
+<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://quimb.readthedocs.io/en/latest/">quimb library</a> can be found in <strong>character_building/character_builder_quimb.py</strong>.</p>
 <p>See <strong>experiments.ipynb</strong> jupyter notebook to reproduce all the experiments from the paper.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
@@ -56,6 +56,13 @@ There are some optimization of this version.</p>
 <li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.get_partitions"><code class="docutils literal notranslate"><span class="pre">get_partitions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.majorize"><code class="docutils literal notranslate"><span class="pre">majorize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.partitions"><code class="docutils literal notranslate"><span class="pre">partitions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.perm_module_d"><code class="docutils literal notranslate"><span class="pre">perm_module_d()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -67,7 +74,7 @@ There are some optimization of this version.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">Character Builder</a></h1>
+<h1 class="logo"><a href="#">Sn characters with tensor networks</a></h1>
 
 
 
@@ -89,6 +96,7 @@ There are some optimization of this version.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="character_building.html">character_building package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
 </ul>
 
 <div class="relations">

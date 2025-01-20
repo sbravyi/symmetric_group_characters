@@ -9,12 +9,10 @@ from pathlib import Path
 # stores all computation results and runtime
 result = []
 
-
 # partitions for the runtime test: (n/2) cycles of length=2
 SelectMu = []
 for m in range(2,16):
     SelectMu.append([2]*m)
-
 
 for Mu in SelectMu:
 

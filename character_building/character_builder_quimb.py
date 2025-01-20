@@ -16,14 +16,12 @@ class CharacterBuilder(Builder):
         Args:
             Mu (tuple[int]):
         """
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, relerr=relerr)
 
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
         # compute the MPS that encodes all characters of Mu
         self.mps = self.get_MPS()
-        
-
 
         self.qubits = [i for i in range(2 * self.n)]
         # local tensors

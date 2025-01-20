@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Character Builder'
+project = 'Sn characters with tensor networks'
 copyright = '2025, Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki'
 author = 'Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki'
 release = '0.42'

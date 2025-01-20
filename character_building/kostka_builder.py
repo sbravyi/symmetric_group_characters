@@ -21,7 +21,7 @@ class KostkaBuilder(Builder):
             relerr (float, optional): MPS compression error. Defaults to 1e-10.
         """
        
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, relerr=relerr)
 
         self.tensor1 = np.zeros((1, 2, 1))
         self.tensor1[0, 1, 0] = 1  # basis state |1>
@@ -61,7 +61,7 @@ class KostkaBuilder(Builder):
             maj (bool, optional): Check if Lambda majorizes Lambda for early termination. Defaults to True.
 
         Returns:
-            int: _description_
+            int: Kostka number K_lambda,Mu
         """
 
         assert (len(Lambda) <= self.n)
