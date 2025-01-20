@@ -41,7 +41,7 @@ def run(n):
         # run time trials
         for i in range(its):
             Mu = rm.choice(Pn) # random Mu
-            while len(Mu) > int(n/3):
+            while len(Mu) > int(n/3): # require Mu to be "short"
                 Mu = rm.choice(Pn)
             
             elapsed_mps, table_mps = trial_mps(Mu, Pn)
