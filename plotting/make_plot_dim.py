@@ -1,10 +1,16 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+FIG_DIR = SCRIPT_DIR.parent / 'FIGS'
+
 
 file_name = 'mps_data.dat'
 
-with open('./DATA/'+file_name, 'rb') as fp:
+with open(DATA_DIR/file_name, 'rb') as fp:
 	result_mps = pickle.load(fp)
 
 num_trials = len(result_mps)
@@ -28,9 +34,8 @@ x = np.arange(num_trials)  # the label locations
 width = 0.25  # the width of the bars
 multiplier = 0
 
-
-plt.rcParams['font.size'] = '20'
 plt.figure(figsize=(10, 8))
+plt.rcParams['font.size'] = '20'
 ax = plt.gca()
 
 
@@ -49,5 +54,8 @@ ax.legend(loc='upper left', ncols=3)
 plt.yscale('log')
 ax.set_xlabel('n')
 ax.grid(True)
+
+
 plt.show()
+plt.savefig(FIG_DIR/"char_dim.pdf")
 

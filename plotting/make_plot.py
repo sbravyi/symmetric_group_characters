@@ -1,15 +1,21 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-from character_builder import get_partitions
+from utils import get_partitions
+from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+FIG_DIR = SCRIPT_DIR.parent / 'FIGS'
+
+path = DATA_DIR  # data directory
 
 file_name = 'mps_data.dat'
-with open('./DATA/'+file_name, 'rb') as fp:
+with open(path / file_name, 'rb') as fp:
 	result_mps = pickle.load(fp)
 
 file_name = 'sage_data.dat'
-with open('./DATA/'+file_name, 'rb') as fp:
+with open(path / file_name, 'rb') as fp:
 	result_sage = pickle.load(fp)
 
 num_trials = len(result_mps)
@@ -91,4 +97,4 @@ plt.yscale('log')
 ax.set_xlabel('n')
 ax.grid(True)
 plt.show()
-
+plt.savefig(FIG_DIR/"char.pdf")

@@ -2,8 +2,8 @@ from sage.all import symmetrica
 import numpy as np
 import time
 import pickle
-from character_builder import get_partitions
-
+from utils import get_partitions
+from pathlib import Path
 
 
 result = []
@@ -44,8 +44,13 @@ for Mu in SelectMu:
     print('###################################')
 
 
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
 
-file_name = './DATA/sage_data.dat'
+path = DATA_DIR  # data directory
+
+file_name = path/'sage_data.dat'
+
 with open(file_name, 'wb') as fp:
     pickle.dump(result, fp)
 print('Done')

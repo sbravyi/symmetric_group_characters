@@ -1,8 +1,9 @@
 import numpy as np
 import time
 import pickle
-from character_builder import CharacterBuilder, get_partitions
-
+from character_building.character_builder import CharacterBuilder
+from utils import get_partitions
+from pathlib import Path
 
 
 # stores all computation results and runtime
@@ -60,7 +61,13 @@ for Mu in SelectMu:
     result.append(result_entry)
     print('###################################')
 
-file_name = './DATA/mps_data.dat'
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+
+path = DATA_DIR  # data directory
+
+file_name = path/'mps_data.dat'
 
 
 with open(file_name, 'wb') as fp:

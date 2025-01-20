@@ -1,12 +1,12 @@
 import numpy as np
 
-# MPNUM is no longer maintained.
+# NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations!
 # The following fixes dependency issues for numpy 2.0
 if np.version.version > '2.0':
     np.float_ = np.float64
     np.complex_ = np.complex128
 
-# The following fixes dependency issues for python >3.7
+# The following fixes dependency issues for python >= 3.7
 import sys
 import collections
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
@@ -16,20 +16,25 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
 
 import mpnum as mp  # MPS/MPO simulation package
 
+from character_building.builder import Builder
 
-# MPS algorithm for characters of the symmetric group S_n described in arX
-class CharacterBuilder:
 
-    # Takes as input a conjugacy class Mu of S_n specified as a list of
-    # positive integers that sum to n
-    def __init__(self, Mu, relerr=1e-10):
+class CharacterBuilder(Builder):
 
-        self.Mu = list(np.sort(Mu))
-        self.n = np.sum(self.Mu)
+    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
+        """
+        MPS algorithm for characters of the symmetric group S_n described in arX
 
-        # relative error for MPS compression
-        self.relerr = relerr
+        Takes as input a conjugacy class Mu of S_n specified as a list of
+        positive integers that sum to n
 
+        Args:
+            Mu (tuple[int]): S_n conjugacy class as a list of positive integers that sum up to n.
+            relerr (float, optional): MPS compression relative error. Defaults to 1e-10.
+        """
+
+        super().__init__(Mu, relerr)
+        
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
 
@@ -62,10 +67,19 @@ class CharacterBuilder:
         self.cacheC2 = {}
         self.cacheR = {}
 
-    # Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
-    # Input:
-    # Lambda : a list of positive integers that sums up to n.
-    def get_character(self, Lambda):
+    def get_character(self, Lambda: tuple[int]) -> int:
+        """
+        Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
+        Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
+
+        Cache the partial products of MPS matrices over each interval to speed up the computation.
+
+        Args:
+            Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.
+
+        Returns:
+            int: character chi_Lambda(Mu)
+        """
         assert (len(Lambda) <= self.n)
         # pad the partition Lambda with zeros to make n parts
         padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
@@ -110,8 +124,16 @@ class CharacterBuilder:
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
 
-    # MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag
-    def getMPO(self, k):
+    def get_MPO(self, k: int) -> mp.MPArray:
+        """
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+
+        Args:
+            k (int): parameter specifying the current operator J_k.
+
+        Returns:
+            mpnum.MPArray: MPO representation of the current operator J_k.
+        """
 
         array = []
 
@@ -148,6 +170,9 @@ class CharacterBuilder:
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
     def get_MPS(self):
+        """
+        Computes the MPS representation of the characters of the symmetric group S_n.
+        """
         # MPS representation of the initial state |1^n 0^n>
         array = self.n * [self.tensor1] + self.n * [self.tensor0]
         self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
@@ -155,27 +180,13 @@ class CharacterBuilder:
         # multiplication
         self.maximum_rank = 1
         for k in self.Mu:
-            mpo = self.getMPO(k)
+            mpo = self.get_MPO(k)
             self.mps = mp.dot(mpo, self.mps)
             self.mps.compress(method='svd', relerr=self.relerr)
             self.maximum_rank = max(self.maximum_rank, np.max(self.mps.ranks))
 
-    def get_bond_dimension(self):
+    def get_bond_dimension(self) -> int:
+        """
+        Returns the maximum bond dimension (maximum Schmidt rank) of the MPS.
+        """
         return self.maximum_rank
-
-
-# generates all partitions of n
-# source:
-# https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
-def partitions(n, I=1):
-    yield (n,)
-    for i in range(I, n // 2 + 1):
-        for p in partitions(n - i, i):
-            yield (i,) + p
-
-
-def get_partitions(n):
-    Pn = [list(p) for p in list(partitions(n))]
-    for p in Pn:
-        p.reverse()
-    return [tuple(p) for p in Pn]

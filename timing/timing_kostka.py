@@ -1,13 +1,19 @@
 import time
 from sage.all import *
-from kostka_builder import KostkaBuilder, partitions
+from character_building.kostka_builder import KostkaBuilder
+from utils import get_partitions
 import random as rm
 import numpy as np
 import json
+from pathlib import Path
 
 # Code to time and compare the mps Kostka algorithm to symmetrica
 
-path = './DATA/kostka__short_' # path prefix
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR.parent / 'DATA'
+
+path = DATA_DIR  # data directory
+file_prefix = 'kostka__short_' # file prefix
 
 start = 10
 stop =  40# non inclusive
@@ -32,18 +38,15 @@ def trial_sage(Mu, Pn):
         
 # collects data for size n
 def run(n):
-    f_name = path+str(n)+'_'+str(relerr)+'.dat'
+    f_name = path / (file_prefix+str(n)+'_'+str(relerr)+'.dat')
     with open(f_name, "a") as f:
         # create all partitions of n
-        Pn = [list(p) for p in partitions(n)]
-        for p in Pn:
-            p.reverse()
-        Pn = [tuple(p) for p in Pn]
+        Pn = get_partitions(n)
         
         # run time trials
         for i in range(its):
             Mu = rm.choice(Pn) # random Mu
-            while len(Mu) > int(n/3):
+            while len(Mu) > int(n/3): # require Mu to be "short"
                 Mu = rm.choice(Pn)
             
             elapsed_mps, table_mps = trial_mps(Mu, Pn)
