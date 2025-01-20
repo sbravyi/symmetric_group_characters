@@ -18,7 +18,9 @@ CharacterBuilderQuimb (character_builder_quimb.py) - computes the character usin
 
 **Timing** 
 timing_mps.py - runs the mpnum MPS algorithm experiments. Generates data in DATA/ 
-
+timing_sage.py - runs the mpnum MPS algorithm experiments. Generates data in DATA/ 
 
 **Plotting** 
+make_plot - plots the character timing experiments 
+make_pot_dim - plots 
 

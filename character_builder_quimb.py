@@ -8,7 +8,7 @@ class CharacterBuilder:
     MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.?????
     """
 
-    def __init__(self, Mu: tuple[int]):
+    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
         """
         MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.?????
 
@@ -17,7 +17,7 @@ class CharacterBuilder:
         """
         self.Mu = list(np.sort(Mu))
         self.n = np.sum(self.Mu)
-        self.relerr = 1e-10  # relative error for MPS compression
+        self.relerr = relerr  # relative error for MPS compression
         self.qubits = [i for i in range(2 * self.n)]
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
