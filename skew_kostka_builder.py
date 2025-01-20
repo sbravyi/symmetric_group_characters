@@ -53,7 +53,7 @@ class SkewKostkaBuilder:
 
     # Determines if Lamba \ Nu has enough boxes to have weight Mu
     def valid_skew(self, Lambda):
-        return majorize(self.Nu, Lambda) and sum(Lambda) == self.m
+        return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m
 
     # Computes the skew Kostka K_Lambda\Nu,Mu for a partition Lambda
     # Input:
