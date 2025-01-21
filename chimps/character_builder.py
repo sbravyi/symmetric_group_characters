@@ -126,7 +126,6 @@ class CharacterBuilder(Builder):
         chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         
-       
         return int(np.round(chi[0][0]))
     
     def _get_MPNUM_MPO(self, k: int) -> mp.MPArray:
