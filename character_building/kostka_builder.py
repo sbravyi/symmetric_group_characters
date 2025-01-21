@@ -156,18 +156,4 @@ class KostkaBuilder(Builder):
         array.append(tensor)
 
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
-
-    def get_MPS(self) -> mp.MPArray:
-        """
-        Updates the MPS representation of the initial state |1^n 0^n> and applies the sequence of the h_k's using MPO-MPS multiplication.
-        """
-        array = self.n * [self.tensor1] + self.n * [self.tensor0]
-        mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
-        # apply a sequence of the h_k's using MPO-MPS multiplication
-        for k in self.Mu:
-            mpo = self.get_MPO(k)
-            mps = mp.dot(mpo, self.mps)
-            mps.compress(method='svd', relerr=self.relerr)
-
-        return mps
         

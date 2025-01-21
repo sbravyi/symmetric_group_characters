@@ -38,17 +38,4 @@ class SkewCharacterBuilder(Builder):
         self.mps = self.get_MPS()
         self.MPSready = True
 
-    
-
-    def get_MPS(self) -> mp.MPArray:
-        array = []  # Local tensors
-        # Traverse Nu in reverse order
-        array += [self.tensor0] * self.Nu[self.m - 1]  # step right
-        array += [self.tensor1]  # step up
-        for i in range(self.m - 1, 0, -1):
-            array += [self.tensor0] * \
-                (self.Nu[i - 1] - self.Nu[i])  # step right
-            array += [self.tensor1]  # step up
-        array = array + [self.tensor0] * \
-            (2 * self.m - len(array))  # step right
 

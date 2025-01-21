@@ -3,7 +3,7 @@ import mpnum as mp  # MPS/MPO package
 
 from utils import majorize
 
-from character_building.builder import Builder  
+from character_building.builder import Builder, MPNUM_DOWN, MPNUM_UP
 
 
 class SkewKostkaBuilder(Builder):
@@ -19,17 +19,12 @@ class SkewKostkaBuilder(Builder):
     """
 
     def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0, ), relerr=1e-14):
-        super().__init__(Mu, Nu, relerr)
+        super().__init__(Mu, Nu, relerr=relerr)
         
         assert (len(Nu) <= self.n)
         assert (sum(Nu) <= self.n)
 
-        self.Nu = Nu + [0] * (self.m - len(Nu))  # Pad Nu with 0s
-    
-        self.tensor1 = np.zeros((1, 2, 1))
-        self.tensor1[0, 1, 0] = 1  # basis state |1>
-        self.tensor0 = np.zeros((1, 2, 1))
-        self.tensor0[0, 0, 0] = 1  # basis state |0>
+       
 
         self.mps = self.get_MPS()
         self.MPSready = True
@@ -72,9 +67,9 @@ class SkewKostkaBuilder(Builder):
         padded_Lambda = list(Lambda) + [0] * (self.m - len(Lambda))
         if self.n < 8:
             # don't use caching for small n's
-            array = [self.tensor0] * (2 * self.n)
+            array = [MPNUM_DOWN] * (2 * self.n)
             for i in range(self.n):
-                array[padded_Lambda[i] + self.n - 1 - i] = self.tensor1
+                array[padded_Lambda[i] + self.n - 1 - i] = MPNUM_UP
             basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
             # compute inner product between a basis state and the MPS
             return mp.mparray.inner(basis_state_mps, self.mps)
@@ -145,25 +140,3 @@ class SkewKostkaBuilder(Builder):
         array.append(tensor)
 
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
-
-    def get_MPS(self) -> mp.MPArray:
-        array = []  # Local tensors
-        # Traverse Nu in reverse order
-        array += [self.tensor0] * self.Nu[self.m - 1]  # step right
-        array += [self.tensor1]  # step up
-        for i in range(self.m - 1, 0, -1):
-            array += [self.tensor0] * \
-                (self.Nu[i - 1] - self.Nu[i])  # step right
-            array += [self.tensor1]  # step up
-        array = array + [self.tensor0] * \
-            (2 * self.m - len(array))  # step right
-        
-        mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
-        # apply a sequence of the h_k's using MPO-MPS multiplication
-        for k in self.Mu:
-            mpo = self.get_MPO(k)
-            mps = mp.dot(mpo, self.mps)
-            mps.compress(method='svd', relerr=self.relerr)
-
-        return mps
-

@@ -1,7 +1,6 @@
 import numpy as np
 import quimb.tensor as qtn
-from quimb.tensor.tensor_1d_compress import mps_gate_with_mpo_direct
-from character_building.builder import Builder
+from character_building.builder import Builder, QUIMB_BACKEND
 
 
 class CharacterBuilder(Builder):
@@ -16,10 +15,8 @@ class CharacterBuilder(Builder):
         Args:
             Mu (tuple[int]):
         """
-        super().__init__(Mu, relerr=relerr)
+        super().__init__(Mu, relerr=relerr, backend=QUIMB_BACKEND)
 
-        # maximum MPS bond dimension (maximum Schmidt rank)
-        self.maximum_rank = 1
         # compute the MPS that encodes all characters of Mu
         self.mps = self.get_MPS()
 
@@ -108,7 +105,7 @@ class CharacterBuilder(Builder):
 
         chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
-        return chi[0][0]
+        return int(chi[0][0])
 
     def get_MPO(self, k) -> qtn.tensor_1d.MatrixProductOperator:
         """
@@ -159,52 +156,3 @@ class CharacterBuilder(Builder):
             upper_ind_id='k{}',
             lower_ind_id='b{}',
             site_tag_id='I{}')
-
-
-    def get_MPS(self) -> qtn.tensor_1d.MatrixProductState:
-
-        # MPS representation of the initial vacuum state
-        tensor0 = np.zeros((1, 2))
-        tensor0[0, 1] = 1  # basis state |1> on the left boundary
-        #
-        tensor1 = np.zeros((1, 1, 2))
-        tensor1[0, 0, 1] = 1  # basis state |1> in the bulk
-        #
-        tensor2 = np.zeros((1, 1, 2))
-        tensor2[0, 0, 0] = 1  # basis state |0> in the bulk
-        #
-        tensor3 = np.zeros((1, 2))
-        tensor3[0, 0] = 1  # basis state |0> on the right boundary
-
-        array = [tensor0] + (self.n - 1) * [tensor1] + \
-            (self.n - 1) * [tensor2] + [tensor3]
-        mps = qtn.tensor_1d.MatrixProductState(
-            array, shape='lrp', tags=self.qubits, site_ind_id='k{}', site_tag_id='I{}')
-
-        for k in self.Mu:
-            mpo = self.get_MPO(k)
-            mps_gate_with_mpo_direct(
-                mps,
-                mpo,
-                cutoff=self.relerr,
-                cutoff_mode='rsum1',
-                inplace=True)
-            for q in self.qubits:
-                if q == 0 or q == (2 * self.n - 1):
-                    D = mps.arrays[q].shape[0]
-                else:
-                    D = max(
-                        mps.arrays[q].shape[0],
-                        mps.arrays[q].shape[1])
-                self.maximum_rank = max(D, self.maximum_rank)
-
-        return mps
-
-    def get_bond_dimension(self) -> int:
-        """
-        Returns the maximum bond dimension (maximum Schmidt rank) of the MPS.
-
-        Returns:
-            int: _description_
-        """
-        return self.maximum_rank
