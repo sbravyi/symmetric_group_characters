@@ -9,7 +9,7 @@ FIG_DIR = SCRIPT_DIR.parent / 'FIGS'
 path = DATA_DIR# change for different datasets
 
 # input data file
-time_data = pd.DataFrame(pd.read_pickle(DATA_DIR/'kostka_short.delete'))
+time_data = pd.DataFrame(pd.read_pickle(DATA_DIR/'kostka_short.dat'))
 
 fig,ax = plt.subplots(figsize=(10, 8))
 
