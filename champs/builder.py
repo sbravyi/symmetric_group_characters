@@ -69,14 +69,42 @@ class Builder():
         self.Mu = Mu
         self.Nu = Nu
         self.n = np.sum(self.Mu)
-        self.m = self.n + np.sum(self.Nu) # length of the skew partition
+        # size of Lambdas to evaluate will be n + sum(Nu)
+        self.m = self.n + np.sum(self.Nu) # size of Hilbert space
         self.Nu = Nu + (0, ) * (self.m - len(Nu))  # pad Nu with 0s
 
         self.relerr = relerr  # relative error for MPS compression
         self.backend = backend
         self.maximum_rank = 1
 
-        self.qubits = [i for i in range(2 * self.n)] # used by quimb to label the qubits
+        self.qubits = [i for i in range(2 * self.m)] # used by quimb to label the qubits
+        
+        # compute the MPS that encodes all characters of Mu
+        self.mps = self.get_MPS()
+        
+        
+        # CACHING:
+            
+        # divide the spin chain into four intervals: left (L), center left
+        # (C1), center right C2, right (R)
+        self.m1 = int(np.round(self.m / 2))
+        self.m2 = self.m
+        self.m3 = int(np.round(3 * self.m / 2))
+        self.L = [i for i in range(2 * self.m) if i < self.m1]
+        self.C1 = [i for i in range(2 * self.m)
+                   if i >= self.m1 and i < self.m2]
+        self.C2 = [i for i in range(2 * self.m)
+                   if i >= self.m2 and i < self.m3]
+        self.R = [i for i in range(2 * self.m) if i >= self.m3]
+        self.mL = len(self.L)
+        self.mC1 = len(self.C1)
+        self.mC2 = len(self.C2)
+        self.mR = len(self.R)
+        # cache partial products of MPS matrices over each interval
+        self.cacheL = {}
+        self.cacheC1 = {}
+        self.cacheC2 = {}
+        self.cacheR = {}
 
 
     def get_MPS(self) -> mp.MPArray | qtn.tensor_1d.MatrixProductState:
@@ -107,7 +135,7 @@ class Builder():
                     cutoff_mode='rsum1',
                     inplace=True)
                 for q in self.qubits:
-                    if q == 0 or q == (2 * self.n - 1):
+                    if q == 0 or q == (2 * self.m - 1):
                         D = mps.arrays[q].shape[0]
                     else:
                         D = max(
@@ -157,8 +185,8 @@ class Builder():
             if sum(self.Nu) != 0:
                 raise NotImplementedError("Initial state for skew partitions with QUIMB backend is not implemented yet.")
 
-            array = [QUIMB_UP_BOUNDARY] + (self.n - 1) * [QUIMB_UP_BULK] + \
-                (self.n - 1) * [QUIMB_DOWN_BULK] + [QUIMB_DOWN_BOUNDARY]
+            array = [QUIMB_UP_BOUNDARY] + (self.m - 1) * [QUIMB_UP_BULK] + \
+                (self.m - 1) * [QUIMB_DOWN_BULK] + [QUIMB_DOWN_BOUNDARY]
             
             return qtn.tensor_1d.MatrixProductState(
                 array, shape='lrp', tags=self.qubits, site_ind_id='k{}', site_tag_id='I{}')
@@ -188,3 +216,60 @@ class Builder():
             bool: True if Lambda \ Nu has enough boxes to have weight Mu, False otherwise.
         """
         return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m
+    
+    def __contract(self, Lambda:tuple[int]):
+        """
+
+        Args:
+            Lambda (tuple[int]): partition that defines the skew shape Lambda \ Nu
+
+        Returns:
+            float: the amplitude <x_lambda+tau|mps> in the mps
+
+        """
+        
+        # Lambda must be a partition of m
+        assert(sum(Lambda) == self.m)
+        
+        padded_Lambda = list(Lambda) + [0] * (self.m - len(Lambda))
+
+        if self.m < 8:
+            # don't use caching for small m's
+            array = [MPNUM_DOWN] * (2 * self.m)
+            for i in range(self.m):
+                array[padded_Lambda[i] + self.m - 1 - i] = MPNUM_UP
+            basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
+            # compute inner product between a basis state and the MPS
+            return mp.mparray.inner(basis_state_mps, self.mps)
+
+        bitstring = np.zeros(2 * self.m, dtype=int)
+        supp = [padded_Lambda[i] + self.m - i - 1 for i in range(self.m)]
+        bitstring[supp] = 1
+        # project bitstring onto each caching register
+        xL = bitstring[self.L]
+        xC1 = bitstring[self.C1]
+        xC2 = bitstring[self.C2]
+        xR = bitstring[self.R]
+
+        if not (tuple(xL) in self.cacheL):
+            self.cacheL[tuple(xL)] = np.linalg.multi_dot(
+                [self.mps.lt[self.L[i]][:, xL[i], :] for i in range(self.mL)])
+
+        if not (tuple(xC1) in self.cacheC1):
+            self.cacheC1[tuple(xC1)] = np.linalg.multi_dot(
+                [self.mps.lt[self.C1[i]][:, xC1[i], :]
+                 for i in range(self.mC1)])
+
+        if not (tuple(xC2) in self.cacheC2):
+            self.cacheC2[tuple(xC2)] = np.linalg.multi_dot(
+                [self.mps.lt[self.C2[i]][:, xC2[i], :]
+                 for i in range(self.mC2)])
+
+        if not (tuple(xR) in self.cacheR):
+            self.cacheR[tuple(xR)] = np.linalg.multi_dot(
+                [self.mps.lt[self.R[i]][:, xR[i], :]
+                 for i in range(self.mR)])
+
+        chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
+               ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
+        return chi[0][0]
