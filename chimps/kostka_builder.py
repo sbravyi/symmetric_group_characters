@@ -22,9 +22,7 @@ class KostkaBuilder(Builder):
         
         assert (len(Nu) <= self.n)
         assert (sum(Nu) <= self.n)
-
-       
-
+        
         self.mps = self.get_MPS()
         self.MPSready = True
 

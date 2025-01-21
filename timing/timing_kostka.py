@@ -1,6 +1,6 @@
 import time
 from sage.all import *
-from character_building.kostka_builder import KostkaBuilder
+from chimps.kostka_builder import KostkaBuilder
 from utils import get_partitions
 import random as rm
 import numpy as np

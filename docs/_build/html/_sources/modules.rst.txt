@@ -1,7 +1,7 @@
-character_building
-==================
+chimps
+======
 
 .. toctree::
    :maxdepth: 4
 
-   character_building
+   chimps

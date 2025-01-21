@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import pickle
-from character_building.character_builder import CharacterBuilder
+from chimps.character_builder import CharacterBuilder
 from utils import get_partitions
 from pathlib import Path
 
@@ -73,4 +73,3 @@ with open(file_name, 'wb') as fp:
 print('Done')
 
 print('file_name=',file_name)
-

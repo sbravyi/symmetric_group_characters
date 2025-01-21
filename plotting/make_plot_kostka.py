@@ -4,7 +4,6 @@ import json
 import pandas as pd
 from pathlib import Path
 
-
 SCRIPT_DIR = Path(__file__).parent.resolve()
 DATA_DIR = SCRIPT_DIR.parent / 'DATA'
 FIG_DIR = SCRIPT_DIR.parent / 'FIGS'

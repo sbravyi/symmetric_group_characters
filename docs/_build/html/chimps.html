@@ -179,49 +179,8 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 </dd></dl>
 
 </section>
-<section id="module-chimps.character_builder_quimb">
-<span id="chimps-character-builder-quimb-module"></span><h2>chimps.character_builder_quimb module<a class="headerlink" href="#module-chimps.character_builder_quimb" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="chimps.character_builder_quimb.CharacterBuilder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chimps.character_builder_quimb.</span></span><span class="sig-name descname"><span class="pre">CharacterBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chimps.character_builder_quimb.CharacterBuilder" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#chimps.builder.Builder" title="chimps.builder.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Builder</span></code></a></p>
-<p>MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.?????</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="chimps.character_builder_quimb.CharacterBuilder.get_MPO">
-<span class="sig-name descname"><span class="pre">get_MPO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MatrixProductOperator</span></span></span><a class="headerlink" href="#chimps.character_builder_quimb.CharacterBuilder.get_MPO" title="Link to this definition">¶</a></dt>
-<dd><p>MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – parameter specifying the current operator J_k.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>MPO representation of the current operator J_k.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mpnum.MPArray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="chimps.character_builder_quimb.CharacterBuilder.get_character">
-<span class="sig-name descname"><span class="pre">get_character</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Lambda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#chimps.character_builder_quimb.CharacterBuilder.get_character" title="Link to this definition">¶</a></dt>
-<dd><p>Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Lambda</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – irrep of S_n</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>character chi_Lambda</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="chimps-character-builder-quimb-module">
+<h2>chimps.character_builder_quimb module<a class="headerlink" href="#chimps-character-builder-quimb-module" title="Link to this heading">¶</a></h2>
 </section>
 <section id="module-chimps.kostka_builder">
 <span id="chimps-kostka-builder-module"></span><h2>chimps.kostka_builder module<a class="headerlink" href="#module-chimps.kostka_builder" title="Link to this heading">¶</a></h2>
@@ -302,12 +261,14 @@ Note that the conjugacy class Mu is fixed by the CharacterBuilder object.</p>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-chimps.builder">chimps.builder module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-chimps.character_builder">chimps.character_builder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-chimps.character_builder_quimb">chimps.character_builder_quimb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chimps-character-builder-quimb-module">chimps.character_builder_quimb module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-chimps.kostka_builder">chimps.kostka_builder module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-chimps">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timing.html">timing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">plotting</a></li>
 </ul>
 
 <div class="relations">

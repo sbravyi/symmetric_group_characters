@@ -24,3 +24,5 @@ See **experiments.ipynb** jupyter notebook to reproduce all the experiments from
 
    chimps
    utils
+   timing
+   plotting
