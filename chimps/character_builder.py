@@ -128,6 +128,7 @@ class CharacterBuilder(Builder):
         
         return int(np.round(chi[0][0]))
     
+
     def _get_MPNUM_MPO(self, k: int) -> mp.MPArray:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
@@ -145,20 +146,15 @@ class CharacterBuilder(Builder):
         # left boundary
         tensor = np.zeros((1, 2, 2, k + 2))
         tensor[0, :, :, 0] = np.eye(2)
-        # flip qubit from '1' to '0'
-        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])
+        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])  # flip qubit from '1' to '0'
         array.append(tensor)
 
         # bulk
-        # index ordering Left Right Up Down
-        tensor = np.zeros((k + 2, 2, 2, k + 2))
-
+        tensor = np.zeros((k + 2, 2, 2, k + 2))   # index ordering Left Right Up Down
         tensor[0, :, :, 0] = np.eye(2)
         tensor[k + 1, :, :, k + 1] = np.eye(2)
-        # flip qubit from '1' to '0'
-        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])
-        # flip qubit from '0' to '1'
-        tensor[k, :, :, k + 1] = np.array([[0, 0], [1, 0]])
+        tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])  # flip qubit from '1' to '0'
+        tensor[k, :, :, k + 1] = np.array([[0, 0], [1, 0]])  # flip qubit from '0' to '1'
 
         # Pauli Z
         for j in range(1, k):

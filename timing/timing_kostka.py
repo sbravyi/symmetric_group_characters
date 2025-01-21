@@ -22,9 +22,10 @@ relerr = 1e-12
 its = 100 # number of iterations per size
 
 def trial_mps(Mu, Pn):
+    print("Mu: ", Mu)
     table_mps = {}
     t = time.time()
-    builder = KostkaBuilder(Mu, relerr)
+    builder = KostkaBuilder(Mu, relerr=relerr)
     for Lambda in Pn:
         table_mps[Lambda] = builder.get_kostka(Lambda)
     return time.time() - t, table_mps

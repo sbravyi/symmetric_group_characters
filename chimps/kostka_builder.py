@@ -1,8 +1,6 @@
 import numpy as np
 import mpnum as mp  # MPS/MPO package
 
-from utils import majorize
-
 from chimps.builder import Builder, MPNUM_DOWN, MPNUM_UP
 
 class KostkaBuilder(Builder):
@@ -22,9 +20,9 @@ class KostkaBuilder(Builder):
         
         assert (len(Nu) <= self.n)
         assert (sum(Nu) <= self.n)
-        
+
         self.mps = self.get_MPS()
-        self.MPSready = True
+        # self.MPSready = True
 
         # divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)

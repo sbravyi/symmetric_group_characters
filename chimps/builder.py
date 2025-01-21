@@ -125,6 +125,7 @@ class Builder():
         """
         return self.maximum_rank
 
+
     def get_initial_MPS(self) -> mp.MPArray | qtn.tensor_1d.MatrixProductState:
         """
         Compute the MPS that encodes the initial state. 
@@ -152,19 +153,9 @@ class Builder():
         # mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         
         elif self.backend == QUIMB_BACKEND:
-            # TODO: check if this is correct
-            # MPS representation of the initial vacuum state
-            #tensor0 = np.zeros((1, 2))
-            #tensor0[0, 1] = 1  # basis state |1> on the left boundary
-            #
-            #tensor1 = np.zeros((1, 1, 2))
-            #tensor1[0, 0, 1] = 1  # basis state |1> in the bulk
-            #
-            #tensor2 = np.zeros((1, 1, 2))
-            #tensor2[0, 0, 0] = 1  # basis state |0> in the bulk
-            #
-            #tensor3 = np.zeros((1, 2))
-            #tensor3[0, 0] = 1  # basis state |0> on the right boundary
+
+            if sum(self.Nu) != 0:
+                raise NotImplementedError("Initial state for skew partitions with QUIMB backend is not implemented yet.")
 
             array = [QUIMB_UP_BOUNDARY] + (self.n - 1) * [QUIMB_UP_BULK] + \
                 (self.n - 1) * [QUIMB_DOWN_BULK] + [QUIMB_DOWN_BOUNDARY]
