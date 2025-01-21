@@ -17,9 +17,12 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
 import mpnum as mp  # MPS/MPO simulation package
 from character_building.builder import Builder
 
+import quimb.tensor as qtn
+from character_building.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
+
 
 class CharacterBuilder(Builder):
-    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
+    def __init__(self, Mu: tuple[int], Nu:tuple[int] = (0, ), relerr: float = 1e-10, backend: str = MPNUM_BACKEND):
         """
         MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.????
 
@@ -31,7 +34,7 @@ class CharacterBuilder(Builder):
             relerr (float, optional): MPS compression relative error. Defaults to 1e-10.
         """
 
-        super().__init__(Mu, relerr=relerr)
+        super().__init__(Mu=Mu, Nu=Nu, relerr=relerr, backend=backend)
         
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
@@ -44,7 +47,7 @@ class CharacterBuilder(Builder):
         # compute the MPS that encodes all characters of Mu
         self.mps = self.get_MPS()
 
-        # Caching registers for partial products of MPS matrices. 
+        # Caching registers for partial products of MPS matrices.
         # Divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
         self.n1 = int(np.round(self.n / 2))
@@ -81,15 +84,15 @@ class CharacterBuilder(Builder):
         """
         assert (len(Lambda) <= self.n)
         # pad the partition Lambda with zeros to make n parts
-        padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
-        if self.n < 8:
+        padded_Lambda = list(Lambda) + [0] * (self.m - len(Lambda))
+        if self.m < 8:
             # don't use caching for small n's
-            array = [self.tensor0] * (2 * self.n)
-            for i in range(self.n):
-                array[padded_Lambda[i] + self.n - 1 - i] = self.tensor1
+            array = [MPNUM_DOWN] * (2 * self.m)
+            for i in range(self.m):
+                array[padded_Lambda[i] + self.m - 1 - i] = MPNUM_UP
             basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
             # compute inner product between a basis state and the MPS
-            return mp.mparray.inner(basis_state_mps, self.mps)
+            return int(np.round(mp.mparray.inner(basis_state_mps, self.mps)))
 
         bitstring = np.zeros(2 * self.n, dtype=int)
         supp = [padded_Lambda[i] + self.n - i - 1 for i in range(self.n)]
@@ -121,19 +124,22 @@ class CharacterBuilder(Builder):
 
         chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
-        return chi[0][0]
-
-    def get_MPO(self, k: int) -> mp.MPArray:
+        
+       
+        return int(np.round(chi[0][0]))
+    
+    def _get_MPNUM_MPO(self, k: int) -> mp.MPArray:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+
+        Uses the MPNUM package to build the MPO.
 
         Args:
             k (int): parameter specifying the current operator J_k.
 
         Returns:
-            mpnum.MPArray: MPO representation of the current operator J_k.
+            mp.MPArray: MPO representation of the current operator J_k.
         """
-
         array = []
 
         # left boundary
@@ -158,7 +164,7 @@ class CharacterBuilder(Builder):
         for j in range(1, k):
             tensor[j, :, :, j + 1] = np.array([[1, 0], [0, -1]])
 
-        array = array + (2 * self.n - 2) * [tensor]
+        array = array + (2 * self.m - 2) * [tensor]
 
         # right boundary
         tensor = np.zeros((k + 2, 2, 2, 1))
@@ -167,3 +173,74 @@ class CharacterBuilder(Builder):
         tensor[k, :, :, 0] = np.array([[0, 0], [1, 0]])
         array.append(tensor)
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
+    
+
+    def _get_QUIMB_MPO(self, k: int) -> qtn.tensor_1d.MatrixProductOperator:
+        """
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+
+        Uses the QUIMB package to build the MPO.
+
+        Args:
+            k (int): parameter specifying the current operator J_k.
+
+        Returns:
+            mp.MPArray: MPO representation of the current operator J_k.
+        """
+        array = []
+
+        # left boundary
+        tensor = np.zeros((k + 2, 2, 2))
+        tensor[0, :, :] = np.eye(2)
+        # flip qubit from '1' to '0'
+        tensor[1, :, :] = np.array([[0, 1], [0, 0]])
+        array.append(tensor)
+
+        # bulk
+        tensor = np.zeros((k + 2, k + 2, 2, 2))
+        tensor[0, 0, :, :] = np.eye(2)
+        tensor[k + 1, k + 1, :, :] = np.eye(2)
+        # flip qubit from '1' to '0'
+        tensor[0, 1, :, :] = np.array([[0, 1], [0, 0]])
+        # flip qubit from '0' to '1'
+        tensor[k, k + 1, :, :] = np.array([[0, 0], [1, 0]])
+
+        # Pauli Z
+        for j in range(1, k):
+            tensor[j, j + 1, :, :] = np.array([[1, 0], [0, -1]])
+
+        array = array + (2 * self.n - 2) * [tensor]
+
+        # right boundary
+        tensor = np.zeros((k + 2, 2, 2))
+        tensor[k + 1, :, :] = np.eye(2)
+        # flip qubit from '0' to '1'
+        tensor[k, :, :] = np.array([[0, 0], [1, 0]])
+        array.append(tensor)
+
+        return qtn.tensor_1d.MatrixProductOperator(
+            array,
+            shape='lrud',
+            tags=self.qubits,
+            upper_ind_id='k{}',
+            lower_ind_id='b{}',
+            site_tag_id='I{}')
+
+
+    def get_MPO(self, k: int) -> mp.MPArray | qtn.tensor_1d.MatrixProductOperator:
+        """
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
+
+        Args:
+            k (int): parameter specifying the current operator J_k.
+
+        Returns:
+            mpnum.MPArray: MPO representation of the current operator J_k.
+        """
+
+        if self.backend == MPNUM_BACKEND:
+            return self._get_MPNUM_MPO(k)
+        
+        elif self.backend == QUIMB_BACKEND: 
+            return self._get_QUIMB_MPO(k)
+            

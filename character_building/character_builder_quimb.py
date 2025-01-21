@@ -105,7 +105,8 @@ class CharacterBuilder(Builder):
 
         chi = (self.cacheL[tuple(xL)] @ self.cacheC1[tuple(xC1)]
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
-        return int(chi[0][0])
+        
+        return chi[0][0]
 
     def get_MPO(self, k) -> qtn.tensor_1d.MatrixProductOperator:
         """

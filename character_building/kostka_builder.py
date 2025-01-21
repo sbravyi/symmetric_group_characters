@@ -1,32 +1,29 @@
 import numpy as np
 import mpnum as mp  # MPS/MPO package
+
 from utils import majorize
 
-from character_building.builder import Builder
-
+from character_building.builder import Builder, MPNUM_DOWN, MPNUM_UP
 
 class KostkaBuilder(Builder):
+    """
+    MPS algorithm for skew Kostka numbers.
 
-    def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
-        """
-        MPS algorithm for Kostka numbers of the symmetric group S_n described in arX
+    Computes Kostkas for a given weight vector Mu and skew Nu.
 
-        Takes as input a partition Mu of n specified as a list of
-        positive integers in nonincreasing order that sum to n.
+    Args:
+        Mu (tuple[int]): we assume that Mu is given in non-increasing order
+        Nu (tuple[int], optional): _description_. Defaults to (0, ).
+        relerr (_type_, optional): _description_. Defaults to 1e-14.
+    """
 
-        Cache partial products of MPS matrices over each interval.
+    def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0, ), relerr=1e-14):
+        super().__init__(Mu, Nu, relerr=relerr)
+        
+        assert (len(Nu) <= self.n)
+        assert (sum(Nu) <= self.n)
 
-        Args:
-            Mu (tuple[int]): S_n partition as a list of positive integers in nonincreasing order that sum up to n.
-            relerr (float, optional): MPS compression error. Defaults to 1e-10.
-        """
        
-        super().__init__(Mu, relerr=relerr)
-
-        self.tensor1 = np.zeros((1, 2, 1))
-        self.tensor1[0, 1, 0] = 1  # basis state |1>
-        self.tensor0 = np.zeros((1, 2, 1))
-        self.tensor0[0, 0, 0] = 1  # basis state |0>
 
         self.mps = self.get_MPS()
         self.MPSready = True
@@ -52,30 +49,25 @@ class KostkaBuilder(Builder):
         self.cacheC2 = {}
         self.cacheR = {}
 
-    def get_kostka(self, Lambda: tuple[int], maj: bool = True) -> int:
-        """
-        Computes the Kostka K_lambda,Mu for a partition Lambda
+    # Computes the skew Kostka K_Lambda\Nu,Mu for a partition Lambda
+    # Input:
+    # Lambda: a non-increasing list of positive integers summing to n
 
-        Args:
-            Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
-            maj (bool, optional): Check if Lambda majorizes Lambda for early termination. Defaults to True.
-
-        Returns:
-            int: Kostka number K_lambda,Mu
-        """
-
-        assert (len(Lambda) <= self.n)
+    def get_kostka(self, Lambda, valid=True):
         # check majorization condition before computing amplitudes
-        if maj:
-            if not majorize(self.Mu, Lambda):
+        if valid:
+            if not self.valid_skew(Lambda):
                 return 0
 
-        padded_Lambda = list(Lambda) + [0] * (self.n - len(Lambda))
+
+        padded_Lambda = list(Lambda) + [0] * (self.m - len(Lambda))
+
+        #TODO: isn't there a bug? m -> n
         if self.n < 8:
             # don't use caching for small n's
-            array = [self.tensor0] * (2 * self.n)
+            array = [MPNUM_DOWN] * (2 * self.n)
             for i in range(self.n):
-                array[padded_Lambda[i] + self.n - 1 - i] = self.tensor1
+                array[padded_Lambda[i] + self.n - 1 - i] = MPNUM_UP
             basis_state_mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
             # compute inner product between a basis state and the MPS
             return mp.mparray.inner(basis_state_mps, self.mps)
@@ -83,7 +75,6 @@ class KostkaBuilder(Builder):
         bitstring = np.zeros(2 * self.n, dtype=int)
         supp = [padded_Lambda[i] + self.n - i - 1 for i in range(self.n)]
         bitstring[supp] = 1
-
         # project bitstring onto each caching register
         xL = bitstring[self.L]
         xC1 = bitstring[self.C1]
@@ -113,19 +104,10 @@ class KostkaBuilder(Builder):
                ) @ (self.cacheC2[tuple(xC2)] @ self.cacheR[tuple(xR)])
         return chi[0][0]
 
-    def get_MPO(self, k: int) -> mp.MPArray:
-        """
-        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
-
-        Args:
-            k (int): parameter specifying the current operator J_k.
-
-        Returns:
-            mp.MPArray: MPO representation of the current operator J_k.
-        """
+    # Returns a MPO representing (operator) complete symmetric polynomials
+    def get_MPO(self, k):
 
         array = []
-
         # index ordering LUDR
 
         # left boundary
@@ -136,7 +118,7 @@ class KostkaBuilder(Builder):
 
         # bulk
         tensor = np.zeros((2 * k + 1, 2, 2, 2 * k + 1))
-        for i in range(k - 1):
+        for i in range(k - 1):  # runs until k-2
             tensor[2 * i, :, :, 2 * i] = np.eye(2)
             tensor[2 * i + 1, :, :, 2 * i + 2] = np.array([[0, 0], [1, 0]])
             tensor[2 * i + 1, :, :, 2 * i + 3] = np.array([[1, 0], [0, 0]])
@@ -147,7 +129,7 @@ class KostkaBuilder(Builder):
         tensor[2 * k - 1, :, :, 2 * k] = np.array([[0, 0], [1, 0]])
         tensor[2 * k, :, :, 2 * k] = np.eye(2)
 
-        array = array + (2 * self.n - 2) * [tensor]
+        array = array + (2 * self.m - 2) * [tensor]
 
         # right boundary
         tensor = np.zeros((2 * k + 1, 2, 2, 1))
@@ -156,4 +138,3 @@ class KostkaBuilder(Builder):
         array.append(tensor)
 
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
-        

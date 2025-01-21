@@ -20,11 +20,13 @@ from quimb.tensor.tensor_1d_compress import mps_gate_with_mpo_direct
 
 # ----------------- MPNUM Imports -----------------
 import mpnum as mp  # MPS/MPO simulation package
+from utils import majorize
 
 
 # ----------------- MPNUM Constants -----------------
 MPNUM_BACKEND = 'mpnum'
 
+# Basis states for the mpnum backend
 MPNUM_UP:np.array = np.zeros((1, 2, 1))
 MPNUM_UP[0, 1, 0] = 1
 
@@ -34,6 +36,7 @@ MPNUM_DOWN[0, 0, 0] = 1
 # ----------------- QUIMB Constants -----------------
 QUIMB_BACKEND = 'quimb'
 
+# Basis states for the quimb backend
 QUIMB_UP_BOUNDARY:np.array = np.zeros((1, 2))
 QUIMB_UP_BOUNDARY[0, 1] = 1
 
@@ -81,7 +84,7 @@ class Builder():
         Compute the MPS that encodes all characters of Mu.
 
         Returns:
-            mp.MPArray | qtn.tensor_1d.MatrixProductState: MPS that encodes all characters of Mu.
+            mp.MPArray | qtn.tensor_1d.MatrixProductState: MPS that encodes all characters of Mu. The return type depends on self.backend.
         """
 
         self.maximum_rank = 1
@@ -181,3 +184,8 @@ class Builder():
             mpnum.MPArray: MPO representation of the current operator J_k.
         """
         raise NotImplementedError
+    
+    
+    # Determines if Lamba \ Nu has enough boxes to have weight Mu
+    def valid_skew(self, Lambda):
+        return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m
