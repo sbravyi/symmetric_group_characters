@@ -15,15 +15,13 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
-
 from character_building.builder import Builder
-
 
 class CharacterBuilder(Builder):
 
     def __init__(self, Mu: tuple[int], relerr: float = 1e-10):
         """
-        MPS algorithm for characters of the symmetric group S_n described in arX
+        MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.????
 
         Takes as input a conjugacy class Mu of S_n specified as a list of
         positive integers that sum to n
@@ -33,7 +31,7 @@ class CharacterBuilder(Builder):
             relerr (float, optional): MPS compression relative error. Defaults to 1e-10.
         """
 
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, relerr=relerr)
         
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
@@ -44,9 +42,10 @@ class CharacterBuilder(Builder):
         self.tensor0[0, 0, 0] = 1  # basis state |0>
 
         # compute the MPS that encodes all characters of Mu
-        self.get_MPS()
+        self.mps = self.get_MPS()
 
-        # divide the spin chain into four intervals: left (L), center left
+        # Caching registers for partial products of MPS matrices. 
+        # Divide the spin chain into four intervals: left (L), center left
         # (C1), center right C2, right (R)
         self.n1 = int(np.round(self.n / 2))
         self.n2 = self.n
@@ -72,7 +71,7 @@ class CharacterBuilder(Builder):
         Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
         Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
 
-        Cache the partial products of MPS matrices over each interval to speed up the computation.
+        Caches the partial products of MPS matrices over each interval to speed up the computation.
 
         Args:
             Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.
@@ -169,21 +168,23 @@ class CharacterBuilder(Builder):
         array.append(tensor)
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
 
-    def get_MPS(self):
+    def get_MPS(self) -> mp.MPArray:
         """
         Computes the MPS representation of the characters of the symmetric group S_n.
         """
         # MPS representation of the initial state |1^n 0^n>
         array = self.n * [self.tensor1] + self.n * [self.tensor0]
-        self.mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
+        mps = mp.MPArray(mp.mpstruct.LocalTensors(array))
         # apply a sequence of the current operators using MPO-MPS
         # multiplication
         self.maximum_rank = 1
         for k in self.Mu:
             mpo = self.get_MPO(k)
-            self.mps = mp.dot(mpo, self.mps)
-            self.mps.compress(method='svd', relerr=self.relerr)
-            self.maximum_rank = max(self.maximum_rank, np.max(self.mps.ranks))
+            mps = mp.dot(mpo, mps)
+            mps.compress(method='svd', relerr=self.relerr)
+            self.maximum_rank = max(self.maximum_rank, np.max(mps.ranks))
+
+        return mps
 
     def get_bond_dimension(self) -> int:
         """

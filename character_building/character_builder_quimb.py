@@ -16,13 +16,12 @@ class CharacterBuilder(Builder):
         Args:
             Mu (tuple[int]):
         """
-        super().__init__(Mu, relerr)
+        super().__init__(Mu, relerr=relerr)
 
         # maximum MPS bond dimension (maximum Schmidt rank)
         self.maximum_rank = 1
         # compute the MPS that encodes all characters of Mu
-        self.get_MPS()
-
+        self.mps = self.get_MPS()
 
         self.qubits = [i for i in range(2 * self.n)]
         # local tensors
@@ -113,13 +112,13 @@ class CharacterBuilder(Builder):
 
     def get_MPO(self, k) -> qtn.tensor_1d.MatrixProductOperator:
         """
-        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag
+        MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
 
         Args:
-            k (int): parameter specifying the current operator J_k
+            k (int): parameter specifying the current operator J_k.
 
         Returns:
-            quimb.tensor.tensor_1d.MatrixProductOperator: MPO representation of the current operator
+            mpnum.MPArray: MPO representation of the current operator J_k.
         """
 
         array = []
@@ -161,7 +160,8 @@ class CharacterBuilder(Builder):
             lower_ind_id='b{}',
             site_tag_id='I{}')
 
-    def get_MPS(self):
+
+    def get_MPS(self) -> qtn.tensor_1d.MatrixProductState:
 
         # MPS representation of the initial vacuum state
         tensor0 = np.zeros((1, 2))
@@ -178,25 +178,27 @@ class CharacterBuilder(Builder):
 
         array = [tensor0] + (self.n - 1) * [tensor1] + \
             (self.n - 1) * [tensor2] + [tensor3]
-        self.mps = qtn.tensor_1d.MatrixProductState(
+        mps = qtn.tensor_1d.MatrixProductState(
             array, shape='lrp', tags=self.qubits, site_ind_id='k{}', site_tag_id='I{}')
 
         for k in self.Mu:
             mpo = self.get_MPO(k)
             mps_gate_with_mpo_direct(
-                self.mps,
+                mps,
                 mpo,
                 cutoff=self.relerr,
                 cutoff_mode='rsum1',
                 inplace=True)
             for q in self.qubits:
                 if q == 0 or q == (2 * self.n - 1):
-                    D = self.mps.arrays[q].shape[0]
+                    D = mps.arrays[q].shape[0]
                 else:
                     D = max(
-                        self.mps.arrays[q].shape[0],
-                        self.mps.arrays[q].shape[1])
+                        mps.arrays[q].shape[0],
+                        mps.arrays[q].shape[1])
                 self.maximum_rank = max(D, self.maximum_rank)
+
+        return mps
 
     def get_bond_dimension(self) -> int:
         """
