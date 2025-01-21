@@ -1,13 +1,15 @@
 import time
 from sage.all import *
-from chimps.kostka_builder import KostkaBuilder
+from champs.kostka_builder import KostkaBuilder
 from utils import get_partitions
 import random as rm
 import numpy as np
 import json
 from pathlib import Path
 
-# Code to time and compare the mps Kostka algorithm to symmetrica
+""" 
+Compares the Kostka number algorithms in ChaMPS to the ones in symmetrica.
+"""
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 DATA_DIR = SCRIPT_DIR.parent / 'DATA'
@@ -16,13 +18,12 @@ path = DATA_DIR  # data directory
 file_prefix = 'kostka__short_' # file prefix
 
 start = 10
-stop =  40# non inclusive
+stop =  10# non inclusive
 step = 4
 relerr = 1e-12
 its = 100 # number of iterations per size
 
 def trial_mps(Mu, Pn):
-    print("Mu: ", Mu)
     table_mps = {}
     t = time.time()
     builder = KostkaBuilder(Mu, relerr=relerr)
@@ -45,7 +46,7 @@ def run(n):
         Pn = get_partitions(n)
         
         # run time trials
-        for i in range(its):
+        for _ in range(its):
             Mu = rm.choice(Pn) # random Mu
             while len(Mu) > int(n/3): # require Mu to be "short"
                 Mu = rm.choice(Pn)
