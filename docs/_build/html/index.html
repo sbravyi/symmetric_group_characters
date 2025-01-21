@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Classical algorithms for characters of the symmetric group &#8212; Sn characters with tensor networks 0.42 documentation</title>
+    <title>MPS algorithms for Sn characters and Kostka numbers &#8212; ChiMPS 0.42 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
@@ -14,7 +14,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="character_building package" href="character_building.html" />
+    <link rel="next" title="chimps package" href="chimps.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,28 +32,25 @@
 
           <div class="body" role="main">
             
-  <section id="classical-algorithms-for-characters-of-the-symmetric-group">
-<h1>Classical algorithms for characters of the symmetric group<a class="headerlink" href="#classical-algorithms-for-characters-of-the-symmetric-group" title="Link to this heading">¶</a></h1>
+  <section id="mps-algorithms-for-sn-characters-and-kostka-numbers">
+<h1>MPS algorithms for Sn characters and Kostka numbers<a class="headerlink" href="#mps-algorithms-for-sn-characters-and-kostka-numbers" title="Link to this heading">¶</a></h1>
 <p>This is a companion package to the paper “Classical and quantum algorithms for  characters of the symmetric group” by Sergey Bravyi, David Gosset, Vojtech Havlicek an Louis Schatzki.
 It contains the implementation of the classical algorithms for computing characters of the symmetric group Sn and Kostka numbers based on a tensor network contraction of Matrix Product States (MPS).</p>
 <p>The algorithm computes an MPS encoding all characters of a given conjugacy class of Sn. It relies on a mapping from characters of Sn to quantum spin chains  proposed by
 <a class="reference external" href="https://arxiv.org/abs/2404.04322">Marcos Crichigno and Anupam Prakash</a>.</p>
 <p>Example of how to use the algorithm can be found in <strong>example.py</strong></p>
-<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://mpnum.readthedocs.io/en/latest/">mpnum library</a> can be found in <strong>character_building/character_builder.py</strong>.
-This version is optimized for speed.</p>
-<p>Implementation of the MPS algorithm based on <a class="reference external" href="https://quimb.readthedocs.io/en/latest/">quimb library</a> can be found in <strong>character_building/character_builder_quimb.py</strong>.</p>
-<p>See <strong>experiments.ipynb</strong> jupyter notebook to reproduce all the experiments from the paper.</p>
+<p>Implementation of the MPS algorithm based both on <a class="reference external" href="https://mpnum.readthedocs.io/en/latest/">mpnum library</a> and <a class="reference external" href="https://quimb.readthedocs.io/en/latest/">quimb library</a> can be found in <strong>character_building/character_builder.py</strong>.
+See <strong>experiments.ipynb</strong> jupyter notebook to reproduce all the experiments from the paper.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="character_building.html">character_building package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building.builder">character_building.builder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building.character_builder">character_building.character_builder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building.character_builder_quimb">character_building.character_builder_quimb module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building.kostka_builder">character_building.kostka_builder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building.skew_kostka_builder">character_building.skew_kostka_builder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="character_building.html#module-character_building">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chimps.html">chimps package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#module-chimps.builder">chimps.builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#module-chimps.character_builder">chimps.character_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#module-chimps.character_builder_quimb">chimps.character_builder_quimb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#module-chimps.kostka_builder">chimps.kostka_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chimps.html#module-chimps">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a><ul>
@@ -74,7 +71,7 @@ This version is optimized for speed.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">Sn characters with tensor networks</a></h1>
+<h1 class="logo"><a href="#">ChiMPS</a></h1>
 
 
 
@@ -95,7 +92,7 @@ This version is optimized for speed.</p>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="character_building.html">character_building package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chimps.html">chimps package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
 </ul>
 
@@ -103,7 +100,7 @@ This version is optimized for speed.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="character_building.html" title="next chapter">character_building package</a></li>
+      <li>Next: <a href="chimps.html" title="next chapter">chimps package</a></li>
   </ul></li>
 </ul>
 </div>

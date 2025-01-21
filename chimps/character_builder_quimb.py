@@ -1,6 +1,6 @@
 import numpy as np
 import quimb.tensor as qtn
-from character_building.builder import Builder, QUIMB_BACKEND
+from chimps.builder import Builder, QUIMB_BACKEND
 
 
 class CharacterBuilder(Builder):

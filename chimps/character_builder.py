@@ -15,10 +15,10 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
-from character_building.builder import Builder
+from chimps.builder import Builder
 
 import quimb.tensor as qtn
-from character_building.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
+from chimps.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
 
 
 class CharacterBuilder(Builder):
@@ -84,6 +84,7 @@ class CharacterBuilder(Builder):
         """
         assert (len(Lambda) <= self.n)
         # pad the partition Lambda with zeros to make n parts
+        # TODO: check 
         padded_Lambda = list(Lambda) + [0] * (self.m - len(Lambda))
         if self.m < 8:
             # don't use caching for small n's

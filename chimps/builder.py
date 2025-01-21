@@ -130,7 +130,7 @@ class Builder():
         Compute the MPS that encodes the initial state. 
 
         Returns:
-            mp.MPArray | qtn.tensor_1d.MatrixProductState: _description_
+            mp.MPArray | qtn.tensor_1d.MatrixProductState: an MPS tensor representation of the initial state. The return type depends on self.backend.
         """
 
         if self.backend == MPNUM_BACKEND:
@@ -181,11 +181,19 @@ class Builder():
             k (int): parameter specifying the current operator J_k.
 
         Returns:
-            mpnum.MPArray: MPO representation of the current operator J_k.
+            mpnum.MPArray | qtn.tensor_1d.MatrixProductOperator: MPO representation of the current operator J_k. the return type depends on self.backend.
         """
         raise NotImplementedError
     
     
-    # Determines if Lamba \ Nu has enough boxes to have weight Mu
-    def valid_skew(self, Lambda):
+    def valid_skew(self, Lambda:tuple[int]) -> bool:
+        """
+        Determines if Lamba \ Nu has enough boxes to have weight Mu.
+
+        Args:
+            Lambda (tuple[int]): partition that defines the skew shape Lambda \ Nu.
+
+        Returns:
+            bool: True if Lambda \ Nu has enough boxes to have weight Mu, False otherwise.
+        """
         return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m

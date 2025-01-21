@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Classical algorithms for characters of the symmetric group
+MPS algorithms for Sn characters and Kostka numbers
 ===============================
 
 This is a companion package to the paper "Classical and quantum algorithms for  characters of the symmetric group" by Sergey Bravyi, David Gosset, Vojtech Havlicek an Louis Schatzki. 
@@ -14,11 +14,7 @@ The algorithm computes an MPS encoding all characters of a given conjugacy class
 
 Example of how to use the algorithm can be found in **example.py**
 
-Implementation of the MPS algorithm based on `mpnum library <https://mpnum.readthedocs.io/en/latest/>`_ can be found in **character_building/character_builder.py**.
-This version is optimized for speed.
-
-Implementation of the MPS algorithm based on `quimb library <https://quimb.readthedocs.io/en/latest/>`_ can be found in **character_building/character_builder_quimb.py**.
-
+Implementation of the MPS algorithm based both on `mpnum library <https://mpnum.readthedocs.io/en/latest/>`_ and `quimb library <https://quimb.readthedocs.io/en/latest/>`_ can be found in **character_building/character_builder.py**.
 See **experiments.ipynb** jupyter notebook to reproduce all the experiments from the paper. 
 
 
@@ -26,5 +22,5 @@ See **experiments.ipynb** jupyter notebook to reproduce all the experiments from
    :maxdepth: 2
    :caption: Contents:
 
-   character_building
+   chimps
    utils

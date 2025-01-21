@@ -3,7 +3,7 @@ import mpnum as mp  # MPS/MPO package
 
 from utils import majorize
 
-from character_building.builder import Builder, MPNUM_DOWN, MPNUM_UP
+from chimps.builder import Builder, MPNUM_DOWN, MPNUM_UP
 
 class KostkaBuilder(Builder):
     """
