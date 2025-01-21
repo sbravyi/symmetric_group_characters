@@ -14,11 +14,11 @@ DATA_DIR = SCRIPT_DIR.parent / 'DATA'
 path = DATA_DIR  # data directory
 file_name = path/'kostka_short.dat'
 
-start = 38
+start = 10
 stop =  40# non inclusive
 step = 4
 relerr = 1e-12
-its = 29 # number of iterations per size
+its = 100 # number of iterations per size
 
 def trial_mps(Mu, Pn):
     table_mps = {}
