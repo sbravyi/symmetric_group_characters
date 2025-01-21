@@ -1,9 +1,11 @@
 import numpy as np
 import time
 import pickle
-from chimps.character_builder import CharacterBuilder
+import champs
 from utils import get_partitions
 from pathlib import Path
+
+
 
 
 # stores all computation results and runtime
@@ -31,7 +33,7 @@ for Mu in SelectMu:
 
 
     t = time.time()
-    builder = CharacterBuilder(Mu)
+    builder = champs.CharacterBuilder(Mu)
     # runtime for computing the MPS
     runtime_part1 = time.time() - t
 

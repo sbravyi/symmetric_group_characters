@@ -4,9 +4,9 @@
    contain the root `toctree` directive.
 
 MPS algorithms for Sn characters and Kostka numbers
-===============================
+====================================================
 
-This is a companion package to the paper "Classical and quantum algorithms for  characters of the symmetric group" by Sergey Bravyi, David Gosset, Vojtech Havlicek an Louis Schatzki. 
+ChaMPS ("Characters with MPS") is a companion package to the paper "Classical and quantum algorithms for  characters of the symmetric group" by Sergey Bravyi, David Gosset, Vojtech Havlicek an Louis Schatzki. 
 It contains the implementation of the classical algorithms for computing characters of the symmetric group Sn and Kostka numbers based on a tensor network contraction of Matrix Product States (MPS).
 
 The algorithm computes an MPS encoding all characters of a given conjugacy class of Sn. It relies on a mapping from characters of Sn to quantum spin chains  proposed by
@@ -22,7 +22,7 @@ See **experiments.ipynb** jupyter notebook to reproduce all the experiments from
    :maxdepth: 2
    :caption: Contents:
 
-   chimps
+   modules
    utils
    timing
    plotting

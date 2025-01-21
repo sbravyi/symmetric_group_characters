@@ -1,9 +1,9 @@
 import numpy as np
 import mpnum as mp  # MPS/MPO package
 
-from chimps.builder import Builder, MPNUM_DOWN, MPNUM_UP
+import champs
 
-class KostkaBuilder(Builder):
+class KostkaBuilder(champs.Builder):
     """
     MPS algorithm for skew Kostka numbers.
 

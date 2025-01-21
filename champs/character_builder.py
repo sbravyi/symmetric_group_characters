@@ -15,10 +15,10 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
-from chimps.builder import Builder
+from champs.builder import Builder
 
 import quimb.tensor as qtn
-from chimps.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
+from champs.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
 
 
 class CharacterBuilder(Builder):
