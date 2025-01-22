@@ -34,7 +34,7 @@ def get_partitions(n:int) -> list[tuple[int]]:
         p.reverse()
     return [tuple(p) for p in Pn]
 
-  
+
 def perm_module_d(Mu:tuple[int]) -> int:
     """
     Returns the dimension of the permutation module of label Mu
@@ -49,6 +49,7 @@ def perm_module_d(Mu:tuple[int]) -> int:
     for part in Mu:
         val -= lgamma(part+1)
     return int(round(exp(val)))  
+
 
 def majorize(Mu: tuple[int], Lambda: tuple[int], Eq = True) -> bool:
     """
