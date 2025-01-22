@@ -1,5 +1,4 @@
 from math import lgamma, exp
-import numpy as np
 
 
 def partitions(n: int, minimum_partition_value: int = 1):
