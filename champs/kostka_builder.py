@@ -29,7 +29,7 @@ class KostkaBuilder(champs.Builder):
         elif not self.valid_skew(Lambda): # skew Kostka
             return 0
         
-        return int(np.round(self._Builder__contract(Lambda)))
+        return int(np.round(self._contract(Lambda)))
 
     # Returns a MPO representing (operator) complete symmetric polynomials
     def get_MPO(self, k):

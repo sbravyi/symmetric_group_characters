@@ -52,7 +52,7 @@ class CharacterBuilder(Builder):
         """
         assert (len(Lambda) <= self.n)
        
-        return int(np.round(self._Builder__contract(Lambda)))
+        return int(np.round(self._contract(Lambda)))
     
 
     def _get_MPNUM_MPO(self, k: int) -> mp.MPArray:

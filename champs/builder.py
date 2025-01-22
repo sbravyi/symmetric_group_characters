@@ -217,7 +217,7 @@ class Builder():
         """
         return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m
     
-    def __contract(self, Lambda:tuple[int]):
+    def _contract(self, Lambda:tuple[int]):
         """
 
         Args:
