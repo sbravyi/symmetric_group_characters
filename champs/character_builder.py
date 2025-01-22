@@ -46,9 +46,7 @@ class CharacterBuilder(champs.Builder):
     def get_character(self, Lambda: tuple[int]) -> int:
         """
         Computes the character chi_Lambda(Mu) for a conjugacy class Mu and an irrep Lambda of S_n
-        Note that the conjugacy class Mu is fixed by the CharacterBuilder object.
-
-        Caches the partial products of MPS matrices over each interval to speed up the computation.
+        Note that the conjugacy class Mu is fixed by the CharacterBuilder object. Caches the partial products of MPS matrices over each interval to speed up the computation.
 
         Args:
             Lambda (tuple[int]): an irrep of S_n as a list of positive integers that sums up to n.
@@ -106,14 +104,13 @@ class CharacterBuilder(champs.Builder):
     def _get_QUIMB_MPO(self, k: int) -> qtn.tensor_1d.MatrixProductOperator:
         """
         MPO representation of the current operator J_k = sum_i a_i a_{i+k}^dag.
-
         Uses the QUIMB package to build the MPO.
 
         Args:
             k (int): parameter specifying the current operator J_k.
 
         Returns:
-            mp.MPArray: MPO representation of the current operator J_k.
+            qtn.tensor_1d.MatrixProductOperator: MPO representation of the current operator J_k.
         """
         array = []
 
@@ -163,7 +160,7 @@ class CharacterBuilder(champs.Builder):
             k (int): parameter specifying the current operator J_k.
 
         Returns:
-            mpnum.MPArray: MPO representation of the current operator J_k.
+            mpnum.MPArray | qtn.tensor_1d.MatrixProductOperator: MPO representation of the current operator J_k. Return type depends on the self.backend.
         """
 
         if self.backend == MPNUM_BACKEND:

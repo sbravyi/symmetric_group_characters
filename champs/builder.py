@@ -1,12 +1,3 @@
-#    ___ _                               
-#   / __\ |__   __ _ _ __ ___  _ __  ___ 
-#  / /  | '_ \ / _` | '_ ` _ \| '_ \/ __|
-# / /___| | | | (_| | | | | | | |_) \__ \
-# \____/|_| |_|\__,_|_| |_| |_| .__/|___/
-#                             |_|        
-
-
-
 import numpy as np
 
 # NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations!

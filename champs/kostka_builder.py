@@ -6,9 +6,8 @@ import champs
 
 class KostkaBuilder(champs.Builder):
     """
-    MPS algorithm for skew Kostka numbers.
-
-    Computes Kostkas for a given weight vector Mu and skew Nu.
+    MPS algorithm for skew Kostka numbers. Computes Kostkas for a given weight vector Mu and skew Nu.
+    Set Nu = (0,) for standard Kostka numbers.
 
     Args:
         Mu (tuple[int]): we assume that Mu is given in non-increasing order
@@ -23,7 +22,16 @@ class KostkaBuilder(champs.Builder):
     # Input:
     # Lambda: a non-increasing list of positive integers summing to n
 
-    def get_kostka(self, Lambda):
+    def get_kostka(self, Lambda: tuple[int]) -> int:
+        r"""
+        Computes the Kostka K_lambda,Mu for a partition Lambda
+
+        Args:
+            Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order that sum up to n.
+
+        Returns:
+            int: Kostka number K_lambda,Mu or (skew Kostka K_(Lambda / Nu),Mu if Nu != (0,))
+        """
         # check majorization or if lambda \ nu is a valid skew partition
         if self.Nu == (0,) and not majorize(self.Mu, Lambda):  # standard Kostka
             return 0

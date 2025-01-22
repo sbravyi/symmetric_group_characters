@@ -1,9 +1,4 @@
 plotting
 =============
-scripts to generate plots from the paper. 
+scripts to generate plots from the paper. See **experiments.ipynb** jupyter notebook to reproduce all the plots from the paper.
 
-
-.. automodule:: plotting
-   :members:
-   :undoc-members:
-   :show-inheritance:

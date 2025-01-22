@@ -1,0 +1,7 @@
+timing\_sage module
+===================
+
+.. automodule:: timing_sage
+   :members:
+   :undoc-members:
+   :show-inheritance:

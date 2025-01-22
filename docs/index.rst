@@ -32,4 +32,4 @@ See **experiments.ipynb** jupyter notebook to reproduce all the experiments from
 .. image:: _static/champs.png
    :alt: Champs
    :align: center
-   :width: 300px
+   :width: 200px

@@ -21,7 +21,17 @@ relerr = 1e-14
 its = 100  # number of iterations per size
 
 
-def trial_mps(Mu, Pn):
+def trial_mps(Mu:tuple[int], Pn:list[tuple[int]]) -> tuple[float, dict]:
+    """
+    Compute Kostka numbers using MPS algorithm for a given weight vector Mu and partitions Pn.
+
+    Args:
+        Mu (tuple[int]): weight vector
+        Pn (tuple[int]): partitions
+
+    Returns:
+        tuple[float, dict]: elapsed time and dictionary of Kostka numbers
+    """
     table_mps = {}
     t = time.time()
     builder = KostkaBuilder(Mu, relerr=relerr)
@@ -30,7 +40,17 @@ def trial_mps(Mu, Pn):
     return time.time() - t, table_mps
 
 
-def trial_sage(Mu, Pn):
+def trial_sage(Mu:tuple[int], Pn:list[tuple[int]]) -> tuple[float, dict]:
+    """
+    Compute Kostka numbers using SAGE for a given weight vector Mu and partitions Pn.
+
+    Args:
+        Mu (tuple[int]): weight vector
+        Pn (list[tuple[int]]): partitions
+
+    Returns:
+        tuple[float, dict]: elapsed time and dictionary of Kostka numbers
+    """
     table_sage = {}
     t = time.time()
     for Lambda in Pn:

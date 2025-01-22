@@ -1,7 +1,9 @@
-symmetric_group_characters
-==========================
+timing
+======
 
 .. toctree::
    :maxdepth: 4
 
-   symmetric_group_characters
+   timing_kostka
+   timing_mps
+   timing_sage
