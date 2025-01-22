@@ -2,7 +2,7 @@ from math import lgamma, exp
 import numpy as np
 
 
-def partitions(n: int, I: int = 1):
+def partitions(n: int, minimum_partition_value: int = 1):
     """
     Returns a generator that yields all partitions of n.
 
@@ -11,10 +11,10 @@ def partitions(n: int, I: int = 1):
 
     Args:
         n (int): Integer to partition
-        I (int, optional): Minimum partition value. Defaults to 1.
+        minimum_partition_value (int, optional): Minimum partition value. Defaults to 1.
     """
     yield (n,)
-    for i in range(I, n // 2 + 1):
+    for i in range(minimum_partition_value, n // 2 + 1):
         for p in partitions(n - i, i):
             yield (i,) + p
 
@@ -29,13 +29,10 @@ def get_partitions(n: int) -> list[tuple[int]]:
     Returns:
         list[tuple[int]]: List of all partitions of n.
     """
-    Pn = [list(p) for p in list(partitions(n))]
-    for p in Pn:
-        p.reverse()
-    return [tuple(p) for p in Pn]
+    return [tuple(reversed(list(p))) for p in list(partitions(n))]
 
 
-def perm_module_d(Mu: tuple[int]) -> int:
+def perm_module_d(mu: tuple[int]) -> int:
     """
     Returns the dimension of the permutation module of label Mu
 
@@ -45,20 +42,20 @@ def perm_module_d(Mu: tuple[int]) -> int:
     Returns:
         int: Dimension of the permutation module of label Mu
     """
-    val = lgamma(sum(Mu) + 1)
-    for part in Mu:
+    val = lgamma(sum(mu) + 1)
+    for part in mu:
         val -= lgamma(part + 1)
     return int(round(exp(val)))
 
 
-def majorize(Mu: tuple[int], Lambda: tuple[int], Eq=True) -> bool:
+def majorize(mu: tuple[int], ell: tuple[int], eq=True) -> bool:
     """
     Determines if lambda >= Mu in majorization order
 
     Args:
-        Mu (tuple[int]): Partition as a list of positive integers in nonincreasing order.
-        Lambda (tuple[int]): Partition as a list of positive integers in nonincreasing order.
-        Eq: Flag for requiring that Mu and Lambda are partitions of the same number
+        mu (tuple[int]): Partition as a list of positive integers in nonincreasing order.
+        ell (tuple[int]): Partition as a list of positive integers in nonincreasing order.
+        eq: Flag for requiring that Mu and Lambda are partitions of the same number
 
     Returns:
         bool: True if Lambda >= Mu in majorization order, False otherwise.
@@ -66,13 +63,14 @@ def majorize(Mu: tuple[int], Lambda: tuple[int], Eq=True) -> bool:
     sum_mu = 0
     sum_lm = 0
 
-    for i in range(min(len(Lambda), len(Mu))):
-        sum_mu += Mu[i]
-        sum_lm += Lambda[i]
+    for i in range(min(len(ell), len(mu))):
+        sum_mu += mu[i]
+        sum_lm += ell[i]
         if sum_mu > sum_lm:
             return False
 
-    if Eq and sum_mu + sum(Mu[i:]) == sum_lm + sum(Lambda[i:]) or not Eq:
-        return True
-    else:
-        return False
+    remaining_mu = sum(mu[i:])
+    remaining_lm = sum(ell[i:])
+    if eq:
+        return sum_mu + remaining_mu == sum_lm + remaining_lm
+    return True

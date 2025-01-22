@@ -216,7 +216,7 @@ class Builder:
         Returns:
             bool: True if Lambda \ Nu has enough boxes to have weight Mu, False otherwise.
         """
-        return majorize(self.Nu, Lambda, Eq=False) and sum(Lambda) == self.m
+        return majorize(self.Nu, Lambda, eq=False) and sum(Lambda) == self.m
 
     def _contract(self, Lambda: tuple[int]):
         """
