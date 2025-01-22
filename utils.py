@@ -2,7 +2,7 @@ from math import lgamma, exp
 import numpy as np
 
 
-def partitions(n:int, I:int=1):
+def partitions(n: int, I: int = 1):
     """
     Returns a generator that yields all partitions of n.
 
@@ -19,7 +19,7 @@ def partitions(n:int, I:int=1):
             yield (i,) + p
 
 
-def get_partitions(n:int) -> list[tuple[int]]:
+def get_partitions(n: int) -> list[tuple[int]]:
     """
     Returns a list of all partitions of n.
 
@@ -35,7 +35,7 @@ def get_partitions(n:int) -> list[tuple[int]]:
     return [tuple(p) for p in Pn]
 
 
-def perm_module_d(Mu:tuple[int]) -> int:
+def perm_module_d(Mu: tuple[int]) -> int:
     """
     Returns the dimension of the permutation module of label Mu
 
@@ -45,13 +45,13 @@ def perm_module_d(Mu:tuple[int]) -> int:
     Returns:
         int: Dimension of the permutation module of label Mu
     """
-    val = lgamma(sum(Mu)+1)
+    val = lgamma(sum(Mu) + 1)
     for part in Mu:
-        val -= lgamma(part+1)
-    return int(round(exp(val)))  
+        val -= lgamma(part + 1)
+    return int(round(exp(val)))
 
 
-def majorize(Mu: tuple[int], Lambda: tuple[int], Eq = True) -> bool:
+def majorize(Mu: tuple[int], Lambda: tuple[int], Eq=True) -> bool:
     """
     Determines if lambda >= Mu in majorization order
 
@@ -71,7 +71,7 @@ def majorize(Mu: tuple[int], Lambda: tuple[int], Eq = True) -> bool:
         sum_lm += Lambda[i]
         if sum_mu > sum_lm:
             return False
-    
+
     if Eq and sum_mu + sum(Mu[i:]) == sum_lm + sum(Lambda[i:]) or not Eq:
         return True
     else:

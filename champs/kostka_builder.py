@@ -3,6 +3,7 @@ import mpnum as mp  # MPS/MPO package
 from utils import majorize
 import champs
 
+
 class KostkaBuilder(champs.Builder):
     """
     MPS algorithm for skew Kostka numbers.
@@ -15,7 +16,7 @@ class KostkaBuilder(champs.Builder):
         relerr (_type_, optional): _description_. Defaults to 1e-14.
     """
 
-    def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0, ), relerr=1e-14):
+    def __init__(self, Mu: tuple[int], Nu: tuple[int] = (0,), relerr=1e-14):
         super().__init__(Mu, Nu, relerr=relerr)
 
     # Computes the skew Kostka K_Lambda\Nu,Mu for a partition Lambda
@@ -24,16 +25,15 @@ class KostkaBuilder(champs.Builder):
 
     def get_kostka(self, Lambda):
         # check majorization or if lambda \ nu is a valid skew partition
-        if self.Nu == (0,) and not majorize(self.Mu, Lambda): # standard Kostka
-                return 0
-        elif not self.valid_skew(Lambda): # skew Kostka
+        if self.Nu == (0,) and not majorize(self.Mu, Lambda):  # standard Kostka
             return 0
-        
+        elif not self.valid_skew(Lambda):  # skew Kostka
+            return 0
+
         return int(np.round(self._contract(Lambda)))
 
     # Returns a MPO representing (operator) complete symmetric polynomials
     def get_MPO(self, k):
-
         array = []
         # index ordering LUDR
 

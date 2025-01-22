@@ -6,15 +6,15 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'ChaMPS'
-copyright = '2025, Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki'
-author = 'Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki'
-release = '0.42'
+project = "ChaMPS"
+copyright = "2025, Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki"
+author = "Sergey Bravyi, David Gosset, Vojtech Havlicek, Louis Schatzki"
+release = "0.42"
 
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -25,13 +25,12 @@ extensions = [
 ]
 
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]

@@ -2,27 +2,34 @@ import numpy as np
 
 # NOTE: MPNUM is no longer maintained, but it's still a good package for MPS/MPO simulations!
 # The following fixes dependency issues for numpy 2.0
-if np.version.version > '2.0':
+if np.version.version > "2.0":
     np.float_ = np.float64
     np.complex_ = np.complex128
 
 # The following fixes dependency issues for python >= 3.7
 import sys
 import collections
+
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
     collections.Sequence = collections.abc.Sequence
     collections.Iterable = collections.abc.Iterable
     collections.Iterator = collections.abc.Iterator
 
 import mpnum as mp  # MPS/MPO simulation package
-from champs.builder import Builder
+import champs
 
 import quimb.tensor as qtn
-from champs.builder import Builder, QUIMB_BACKEND, MPNUM_BACKEND, MPNUM_DOWN, MPNUM_UP
+from champs.builder import QUIMB_BACKEND, MPNUM_BACKEND
 
 
-class CharacterBuilder(Builder):
-    def __init__(self, Mu: tuple[int], Nu:tuple[int] = (0, ), relerr: float = 1e-10, backend: str = MPNUM_BACKEND):
+class CharacterBuilder(champs.Builder):
+    def __init__(
+        self,
+        Mu: tuple[int],
+        Nu: tuple[int] = (0,),
+        relerr: float = 1e-10,
+        backend: str = MPNUM_BACKEND,
+    ):
         """
         MPS algorithm for characters of the symmetric group S_n described in arXiv:2501.????
 
@@ -35,7 +42,6 @@ class CharacterBuilder(Builder):
         """
 
         super().__init__(Mu=Mu, Nu=Nu, relerr=relerr, backend=backend)
-
 
     def get_character(self, Lambda: tuple[int]) -> int:
         """
@@ -50,10 +56,9 @@ class CharacterBuilder(Builder):
         Returns:
             int: character chi_Lambda(Mu)
         """
-        assert (len(Lambda) <= self.n)
-       
+        assert len(Lambda) <= self.n
+
         return int(np.round(self._contract(Lambda)))
-    
 
     def _get_MPNUM_MPO(self, k: int) -> mp.MPArray:
         """
@@ -76,11 +81,13 @@ class CharacterBuilder(Builder):
         array.append(tensor)
 
         # bulk
-        tensor = np.zeros((k + 2, 2, 2, k + 2))   # index ordering Left Right Up Down
+        tensor = np.zeros((k + 2, 2, 2, k + 2))  # index ordering Left Right Up Down
         tensor[0, :, :, 0] = np.eye(2)
         tensor[k + 1, :, :, k + 1] = np.eye(2)
         tensor[0, :, :, 1] = np.array([[0, 1], [0, 0]])  # flip qubit from '1' to '0'
-        tensor[k, :, :, k + 1] = np.array([[0, 0], [1, 0]])  # flip qubit from '0' to '1'
+        tensor[k, :, :, k + 1] = np.array(
+            [[0, 0], [1, 0]]
+        )  # flip qubit from '0' to '1'
 
         # Pauli Z
         for j in range(1, k):
@@ -95,7 +102,6 @@ class CharacterBuilder(Builder):
         tensor[k, :, :, 0] = np.array([[0, 0], [1, 0]])
         array.append(tensor)
         return mp.MPArray(mp.mpstruct.LocalTensors(array))
-    
 
     def _get_QUIMB_MPO(self, k: int) -> qtn.tensor_1d.MatrixProductOperator:
         """
@@ -142,12 +148,12 @@ class CharacterBuilder(Builder):
 
         return qtn.tensor_1d.MatrixProductOperator(
             array,
-            shape='lrud',
+            shape="lrud",
             tags=self.qubits,
-            upper_ind_id='k{}',
-            lower_ind_id='b{}',
-            site_tag_id='I{}')
-
+            upper_ind_id="k{}",
+            lower_ind_id="b{}",
+            site_tag_id="I{}",
+        )
 
     def get_MPO(self, k: int) -> mp.MPArray | qtn.tensor_1d.MatrixProductOperator:
         """
@@ -162,7 +168,6 @@ class CharacterBuilder(Builder):
 
         if self.backend == MPNUM_BACKEND:
             return self._get_MPNUM_MPO(k)
-        
-        elif self.backend == QUIMB_BACKEND: 
+
+        elif self.backend == QUIMB_BACKEND:
             return self._get_QUIMB_MPO(k)
-            
