@@ -1,6 +1,0 @@
-API Reference
-============
-
-.. automodule:: character_building
-   :members:
-   :undoc-members:

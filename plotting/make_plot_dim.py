@@ -20,10 +20,7 @@ n_min = 10
 result_mps = [result_mps[i] for i in range(num_trials) if np.sum(result_mps[i]['Mu'])>=n_min]
 num_trials = len(result_mps)
 
-
 partitions = [str(np.sum(result_mps[i]['Mu'])) for i in range(num_trials)]
-
-
 
 data = {}
 data['D'] = [result_mps[i]['D'] for i in range(num_trials)]

@@ -5,7 +5,6 @@ import pickle
 from utils import get_partitions
 from pathlib import Path
 
-
 result = []
 
 # partitions for the timing test
@@ -56,4 +55,3 @@ with open(file_name, 'wb') as fp:
 print('Done')
 
 print('file_name=',file_name)
-

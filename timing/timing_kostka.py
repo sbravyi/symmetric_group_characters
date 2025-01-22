@@ -1,6 +1,6 @@
 import time
 from sage.all import *
-from character_building.kostka_builder import KostkaBuilder
+from champs.kostka_builder import KostkaBuilder
 from utils import get_partitions
 import random as rm
 import numpy as np
@@ -17,13 +17,13 @@ file_name = path/'kostka_short.dat'
 start = 10
 stop =  40# non inclusive
 step = 4
-relerr = 1e-12
+relerr = 1e-14
 its = 100 # number of iterations per size
 
 def trial_mps(Mu, Pn):
     table_mps = {}
     t = time.time()
-    builder = KostkaBuilder(Mu, relerr)
+    builder = KostkaBuilder(Mu, relerr=relerr)
     for Lambda in Pn:
         table_mps[Lambda] = builder.get_kostka(Lambda)
     return time.time() - t, table_mps
@@ -93,4 +93,3 @@ with open(file_name, 'wb') as fp:
     pickle.dump(results, fp)
 print('Done')
 print('file_name=',file_name)
-
