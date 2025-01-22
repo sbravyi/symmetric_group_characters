@@ -1,7 +1,7 @@
-champs
-======
+symmetric_group_characters
+==========================
 
 .. toctree::
    :maxdepth: 4
 
-   champs
+   symmetric_group_characters

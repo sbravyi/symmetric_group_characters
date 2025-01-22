@@ -14,8 +14,6 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="timing" href="timing.html" />
-    <link rel="prev" title="champs package" href="champs.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -55,14 +53,14 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.majorize">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">majorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lambda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#utils.majorize" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">majorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#utils.majorize" title="Link to this definition">¶</a></dt>
 <dd><p>Determines if lambda &gt;= Mu in majorization order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>Mu</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – Partition as a list of positive integers in nonincreasing order.</p></li>
-<li><p><strong>Lambda</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – Partition as a list of positive integers in nonincreasing order.</p></li>
-<li><p><strong>Eq</strong> – Flag for requiring that Mu and Lambda are partitions of the same number</p></li>
+<li><p><strong>mu</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – Partition as a list of positive integers in nonincreasing order.</p></li>
+<li><p><strong>ell</strong> (<em>tuple</em><em>[</em><em>int</em><em>]</em>) – Partition as a list of positive integers in nonincreasing order.</p></li>
+<li><p><strong>eq</strong> – Flag for requiring that Mu and Lambda are partitions of the same number</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -76,7 +74,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.partitions">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.partitions" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_partition_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.partitions" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a generator that yields all partitions of n.</p>
 <p>Source:
 <a class="reference external" href="https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning">https://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning</a></p>
@@ -84,7 +82,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – Integer to partition</p></li>
-<li><p><strong>I</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum partition value. Defaults to 1.</p></li>
+<li><p><strong>minimum_partition_value</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum partition value. Defaults to 1.</p></li>
 </ul>
 </dd>
 </dl>
@@ -92,7 +90,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.perm_module_d">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">perm_module_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#utils.perm_module_d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">perm_module_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#utils.perm_module_d" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the dimension of the permutation module of label Mu</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -135,26 +133,11 @@
     </div>
 </search>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="modules.html">champs</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#utils.get_partitions"><code class="docutils literal notranslate"><span class="pre">get_partitions()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.majorize"><code class="docutils literal notranslate"><span class="pre">majorize()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.partitions"><code class="docutils literal notranslate"><span class="pre">partitions()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.perm_module_d"><code class="docutils literal notranslate"><span class="pre">perm_module_d()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="timing.html">timing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plotting.html">plotting</a></li>
-</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="champs.html" title="previous chapter">champs package</a></li>
-      <li>Next: <a href="timing.html" title="next chapter">timing</a></li>
   </ul></li>
 </ul>
 </div>
