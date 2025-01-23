@@ -1,9 +1,0 @@
-timing
-======
-
-.. toctree::
-   :maxdepth: 4
-
-   timing_kostka
-   timing_mps
-   timing_sage

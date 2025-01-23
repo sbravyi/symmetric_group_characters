@@ -1,7 +1,0 @@
-timing\_mps module
-==================
-
-.. automodule:: timing_mps
-   :members:
-   :undoc-members:
-   :show-inheritance:
