@@ -4,11 +4,5 @@ The algorithm computes an MPS encoding all characters of a given conjugacy class
 
 Example of how to use the algorithm can be found in **example.py**
 
-Implementation of the MPS algorithm based on [mpnum library](https://mpnum.readthedocs.io/en/latest/) can be found in **character_builder.py**\
-This version is optimized for speed.
-
-Implementation of the MPS algorithm based on [quimb library](https://quimb.readthedocs.io/en/latest/) can be found in **character_builder_quimb.py**\
-This version is not optimized.
-
 See **experiments.ipynb** jupyter notebook to reproduce all the experiments from the paper. 
 
