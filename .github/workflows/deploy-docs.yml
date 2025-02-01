@@ -28,7 +28,7 @@ jobs:
         cd docs
         make clean
         make html 
-        cp -r _build/html/* .
+        cp -r _build/html/. .
 
 
     - name: Commit and Push built docs
