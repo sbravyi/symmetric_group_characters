@@ -34,4 +34,14 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
+
+html_context = {
+    'css_files': [
+        '_static/pygments.css',
+        '_static/basic.css',
+        '_static/alabaster.css'
+    ]
+}
+
 html_static_path_version = False
+
