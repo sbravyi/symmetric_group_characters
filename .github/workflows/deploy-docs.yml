@@ -32,13 +32,13 @@ jobs:
     - name: Move Build to the Root of docs
       run: 
         rm -rf docs/html
-        mv docs/_build/html docs/html
+        mv docs/_build/html docs/
 
 
     - name: Commit and Push built docs
       run: | 
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add docs/html
+        git add docs/
         git commit -m "Deploy updated Sphinx docs" || echo "No changes to commit"
         git push origin main
