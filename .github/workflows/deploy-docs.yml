@@ -23,17 +23,17 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Build Documentation and copy to /docs
+    - name: Build Documentation
       run: |
         cd docs
         make clean
         make html 
-        cp -r _build/html/. .
+        
 
-    - name: Ensure .nojekyll Exists
-      run: |
-          touch docs/.nojekyll
-
+    - name: Copy built files (including hiddepn ones)
+      run: | 
+        cp -r docs/_build/html/. docs/
+        touch docs/.nojekyll
 
     - name: Commit and Push built docs
       run: | 
