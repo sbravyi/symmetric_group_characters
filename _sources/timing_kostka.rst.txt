@@ -1,7 +1,0 @@
-timing\_kostka module
-=====================
-
-.. automodule:: timing_kostka
-   :members:
-   :undoc-members:
-   :show-inheritance:
