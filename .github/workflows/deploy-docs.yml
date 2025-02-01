@@ -3,7 +3,7 @@ name: Deploy Sphinx Docs to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main # Trigger on pushes to the main branch. 
 
 jobs:
   build:
@@ -23,11 +23,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install sphinx sphinx-rtd-theme
 
-    - name: Build documentation
-      run: sphinx-build -b html docs/ docs/_build/html
+    - name: Build Documentation
+      run: |
+        cd docs
+        make html 
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/_build/html
+        publish_dir: ./docs/_build/html
